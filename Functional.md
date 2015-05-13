@@ -43,6 +43,8 @@ user=> (type 3.14)
 java.lang.Double
 user=> (type "clojure")
 java.lang.String
+user=> (type true)
+java.lang.Boolean
 ```
 
 ## Keywords
@@ -164,3 +166,21 @@ TODO
 ## Exercises
 
 TODO
+
+# Thinking functionally
+
+## Recursion
+
+## Map
+
+## Filter
+
+## Reduce
+
+
+
+
+
+
+
+
