@@ -1,3 +1,4 @@
+# TODO exercises throughout the lesson
 
 # Clojure as a functional language
 
@@ -161,26 +162,153 @@ user=> []
 
 ### Hash Maps
 
-TODO
+Hashmaps are just like maps or dictionaries in other languages. They store key/value pairs
+and we can efficiently access values in the hash-map by their keys.
 
-## Exercises
+We can create hash-maps with the `hash-map` function. This function takes an even number
+of arguments, which is of the format key followed by pair.
 
-TODO
+```clojure
+(hash-map "blue" 30 "red" 100)
+```
+
+So this will create a map, with keys "blue" and "red" each with an integer as its value.
+
+To access values from the keys we can use the `get` function which takes a map as its first
+argument and the key for the value we want to retrieve as the second.
+
+```clojure
+user-> (get (hash-map "blue" 30 "red" 100) "blue")
+30
+```
+
+We can also build a new map from an old one using the `assoc` function
+
+```clojure
+user=> (assoc (hash-map "blue" 30 "red" 100) "green" 20)
+{"blue" 30, "green" 20, "red" 100}
+```
+
+Finally we have a shorthand to build maps, we don't need to use the hash-map function.
+
+```clojure
+user=> {"red" 100 "blue" 30}
+{"blue" 30, "red" 100}
+```
+
+# Saving values into names
+
+So far we've just been nesting our function calls, what if we wanted to be able to store
+the result of a call into a name so we can easily access it? We can use the `def` function
+for this.
+
+```clojure
+user=> (def PI 3.14)
+#'user/PI
+user=> (def some-list (list 1 2 3 4))
+#'user/some-list
+user=> some-list
+(1 2 3 4)
+user=> PI
+3.14
+```
+
+# Defining your own functions
+
+So far we've seen how we can use builtin functions, but how do we define our own?
+
+We can use the `fn` function to create new functions, we can use the `def` function from the
+previous section to associate the new function with a name. Lets write a simple square function.
+
+`fn` takes two arguments, the first argument is a vector of the arguments and the second is the
+operation we want to perform.
+
+```clojure
+user=> (def square (fn [number] (* number number)))
+#'user/square
+user=> (square 5)
+25
+```
+
+Notice that we didn't need to specify a return statement like we often have to do in other languages.
+In Clojure a function call will return the last expression it evaluates.
+
+We can also use a shorthand to combine `def` and `fn` which is `defn`.
+
+```clojure
+(defn square [number] (* number number))
+```
 
 # Thinking functionally
 
+TODO
+
 ## Recursion
 
-## Map
+TODO
 
-## Filter
+## Higher-order functions
 
-## Reduce
+A higher-order function is one that either takes a function as input or returns a function as
+output. In Clojure we can treat functions as values just like any other type. This is one
+of the really powerful things of functional programming in general.
 
+To explore this further we'll go over 3 built-in higher order functions that are integral
+to a functional programmers toolbox.
 
+### Map
 
+`map` is a function that takes a function as its first argument and a sequence as its second
+and applies the function to each element building a new list from that.
 
+```clojure
+user=> (map square [1 2 3])
+(1 4 9)
+user=> (map square '(1 2 3))
+(1 4 9)
+```
 
+So we passed square as a value, and either a list or a vector and got a new list built.
 
+### Filter
+
+`filter` works like `map` in the sense that it also takes a function as its first argument
+and a sequence as its second. The function passed to `filter` must return a boolean.
+Like `map` we will walk through each element of the sequence and apply the function to it,
+if the function we passed in evaluates to `true` on the element we will keep it, if it's `false`
+we will drop the element from the sequence.
+
+Lets use a builtin function `even?` which returns `true` if the number we pass it is even, otherwise
+`false`.
+
+```clojure
+user=> (even? 3)
+false
+user=> (even? 2)
+true
+```
+
+Now lets pass `even?` to `filter`.
+
+```clojure
+user=> (filter even? [1 2 3 4 5 6])
+(2 4 6)
+```
+
+### Reduce
+
+`reduce` also takes two arguments, the first one is a function and the second is a sequence just
+like `map` and `filter`. The function we pass in must take two arguments instead of one.
+
+`reduce` applies the function to the first element of the sequence and the second. It then
+applies the result of the first call and applies it to the third element of the sequence.
+It then walks through the rest of the sequence.
+
+A quick example is we can reduce `+` over a sequence of numbers to add them all together.
+
+```clojure
+user=> (reduce + [1 2 3 4])
+10
+```
 
 
