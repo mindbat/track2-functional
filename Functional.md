@@ -92,13 +92,6 @@ user=> (= 1 2)
 false
 ```
 
-### Exercises
-
-
-```clojure
-(= (+ 3 4) 7 (+ 2 __))
-```
-
 ## Common types
 
 Clojure mostly just uses Java classes under the hood. Lets examine some common types using
@@ -124,18 +117,21 @@ So at a high level a keyword is a constant literal, just like the integer `1234`
 the string constant `"foobar"`. Keywords look and often behave a lot like strings
 with a couple exceptions.
 
-* Instead of being surrounded by quotes, they begin with a `:` so `"foo"` translates
-to `:foo`
+* They begin with a `:` so `:foo` is an example keyword, while `"foo"` is an example string.
 * They can't have spaces in them. `"foo bar"` may be a valid string but it's not a valid
 keyword.
-* They have special interactions with hasmaps which we'll cover later.
-TODO: Mention how you can use a keyword as a function with regard to hashmaps.
+* Keywords get special treatment in Clojure: they act like a function when looking up a value 
+in a hash-map - we'll introduce hash-maps later.
 
-## Common data structures
+## Exercises
+
+Try to complete the first set of Koans `01_equalities.clj`
+
+# Common data structures
 
 When working in Clojure you'll encounter 3 common types of data structures.
 
-### Lists
+## Lists
 
 A list in Clojure is just a linked list. There are a couple of ways we can create them, the
 first one being the `list` function:
@@ -182,7 +178,11 @@ user=> `()
 ()
 ```
 
-### Vectors
+### Exercises
+
+Try to complete the second set of Koans `02_lists.clj`.
+
+## Vectors
 
 A vector in Clojure is a lot like an array in other languages. That means we can efficiently access
 the index of a vector compared to a list, but adding elements might be a bit more expensive than on
@@ -235,9 +235,47 @@ user=> []
 []
 ```
 
-### Hash Maps
+### Exercises
 
-Hashmaps are just like maps or dictionaries in other languages. They store key/value pairs
+Try to complete the third set of Koans `03_vectors.clj`.
+
+## Sets
+
+Sets are a datastructure that can only contain unique elements. We construct a set with
+the `set` function which takes in some other sequence.
+
+```clojure
+user=> (set [1 2 3 4])
+#{1 4 3 2}
+user=> (set [1 1 2 3])
+#{1 3 2}
+```
+
+So using this method of constructing a set will gurantee us a set of unique elements if we happen
+to have duplicates they just get thrown away.
+
+Finally Clojure has a shorthand way to create sets.
+
+```clojure
+user=> #{1 2 3}
+#{1 3 2}
+```
+
+But using the shorthand we can't initialize it with duplicate elements.
+
+```clojure
+user=> #{1 1 2 3}
+
+IllegalArgumentException Duplicate key: 1  clojure.lang.PersistentHashSet.createWithCheck (PersistentHashSet.java:68)
+```
+
+### Exercises
+
+Try to complete the forth set of Koans `04_sets.clj`.
+
+## Hash Maps
+
+Hash-maps are just like maps or dictionaries in other languages. They store key/value pairs
 and we can efficiently access values in the hash-map by their keys.
 
 We can create hash-maps with the `hash-map` function. This function takes an even number
@@ -270,6 +308,10 @@ Finally we have a shorthand to build maps, we don't need to use the hash-map fun
 user=> {"red" 100 "blue" 30}
 {"blue" 30, "red" 100}
 ```
+
+### Exercises
+
+Try to complete the fifth set of Koans `05_maps.clj`.
 
 # Saving values into names
 
