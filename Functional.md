@@ -47,7 +47,7 @@ In Clojure this might look like the following:
 ```
 
 There are a couple differences here, first thing to note is that we are using a different
-case style. In Clojure we don't use camel case but instead lisp case which is dash seperated.
+case style. In Clojure we don't use camel case but instead lisp case which is dash separated.
 
 Another thing is that we've placed the function inside the parenthesis. In Clojure a function
 call is always an open paren followed by the function we want to call, followed by any arguments
@@ -217,7 +217,7 @@ user=> (conj (vector 1 2 3) 0)
 
 Wait, this isn't what we expect. With a list using `conj` added the new element to the front,
 not to the back. This is because the `conj` function adds elements where it is most efficient
-for the datastructure.
+for the data-structure.
 
 In a list it is cheapest to add an element to the front, we don't
 need to traverse the whole list to get to the end to add the element.
@@ -241,7 +241,7 @@ Try to complete the third set of Koans `03_vectors.clj`.
 
 ## Sets
 
-Sets are a datastructure that can only contain unique elements. We construct a set with
+Sets are a data-structure that can only contain unique elements. We construct a set with
 the `set` function which takes in some other sequence.
 
 ```clojure
@@ -251,7 +251,7 @@ user=> (set [1 1 2 3])
 #{1 3 2}
 ```
 
-So using this method of constructing a set will gurantee us a set of unique elements if we happen
+So using this method of constructing a set will guarantee us a set of unique elements if we happen
 to have duplicates they just get thrown away.
 
 Finally Clojure has a shorthand way to create sets.
@@ -395,7 +395,7 @@ Like `map` we will walk through each element of the sequence and apply the funct
 if the function we passed in evaluates to `true` on the element we will keep it, if it's `false`
 we will drop the element from the sequence.
 
-Lets use a builtin function `even?` which returns `true` if the number we pass it is even, otherwise
+Lets use a built-in function `even?` which returns `true` if the number we pass it is even, otherwise
 `false`.
 
 ```clojure
