@@ -1,11 +1,32 @@
-# TODO exercises throughout the lesson
-
 # Clojure as a functional language
 
 Clojure is a functional language. Functions are first class citizens just like
 any other value type you have already encountered (ints/floats/objects etc.).
 This means that we can pass functions as arguments to other functions, returning
 functions from functions, and even manipulating functions.
+
+# Koans
+
+Periodically we'll mention exercises from the Clojure Koans. These are a series of exercises
+designed to teach Clojure.
+
+They'll look like the following:
+
+```clojure
+(= true __)
+```
+
+The purpose of these exercises is to alter the `__` to something such that the entire expression
+when evaluated in a REPL returns `true`. In this case the answer would be:
+
+```clojure
+user=> (= true true)
+true
+```
+
+The koans are done incrementally, as you complete each one it will then move on to the next koan.
+
+To get the koans all setup and running checkout: http://clojurekoans.com
 
 # Syntax
 
@@ -31,6 +52,49 @@ we are passing to the function, followed by a closing paren.
 
 Lastly another thing is that we aren't separating the arguments with a comma anymore. In Clojure
 commas are simply treated as whitespace so we don't need them.
+
+## Common functions
+
+### Math
+
+In Clojure everything is a function, there is no notion of operators. Additionally all of the
+math operators take a variable number of arguments.
+
+```clojure
+user=> (+ 1 1)
+2
+user=> (+ 1 2 3)
+6
+user=> (- 1 1)
+0
+user=> (- 5)
+-5
+user=> (* 2 3)
+6
+user=> (/ 6 2)
+3
+```
+
+### Equality
+
+We can use the `=` function to test whether its arguments are all equal to each other.
+Like the math functions the `=` function also takes multiple arguments.
+
+```clojure
+user=> (= "hello" "hello")
+true
+user=> (= 1 1 1)
+true
+user=> (= 1 2)
+false
+```
+
+### Exercises
+
+
+```clojure
+(= (+ 3 4) 7 (+ 2 __))
+```
 
 ## Common types
 
