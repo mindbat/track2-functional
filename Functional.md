@@ -1,11 +1,35 @@
-# TODO exercises throughout the lesson
-
 # Clojure as a functional language
 
-Clojure is a functional language. Functions are first class citizens just like
+Clojure is a functional language - that means that functions are first class citizens just like
 any other value type you have already encountered (ints/floats/objects etc.).
 This means that we can pass functions as arguments to other functions, returning
 functions from functions, and even manipulating functions.
+
+# Koans
+
+Periodically we'll mention exercises from the Clojure Koans. These are a series of exercises
+designed to teach Clojure.
+
+Each one will be an assertion such as the following:
+
+```clojure
+(= true __)
+```
+
+The purpose of these exercises is to alter the `__` to make the assertion pass.
+
+```clojure
+(= true true)
+```
+
+The koans are done incrementally, as you complete each one it will then move on to the next koan.
+Feel free to go through these at your own pace.
+
+To get the koans all setup and running
+visit: http://clojurekoans.com
+
+You should have everything you need installed from the Install Fest, so hop down to the
+`Install the Koans` section to get started.
 
 # Syntax
 
@@ -23,7 +47,7 @@ In Clojure this might look like the following:
 ```
 
 There are a couple differences here, first thing to note is that we are using a different
-case style. In Clojure we don't use camel case but instead lisp case which is dash seperated.
+case style. In Clojure we don't use camel case but instead lisp case which is dash separated.
 
 Another thing is that we've placed the function inside the parenthesis. In Clojure a function
 call is always an open paren followed by the function we want to call, followed by any arguments
@@ -31,6 +55,42 @@ we are passing to the function, followed by a closing paren.
 
 Lastly another thing is that we aren't separating the arguments with a comma anymore. In Clojure
 commas are simply treated as whitespace so we don't need them.
+
+## Common functions
+
+### Math
+
+In Clojure everything is a function, there is no notion of operators. Additionally all of the
+math operators take a variable number of arguments.
+
+```clojure
+user=> (+ 1 1)
+2
+user=> (+ 1 2 3)
+6
+user=> (- 1 1)
+0
+user=> (- 5)
+-5
+user=> (* 2 3)
+6
+user=> (/ 6 2)
+3
+```
+
+### Equality
+
+We can use the `=` function to test whether its arguments are all equal to each other.
+Like the math functions the `=` function also takes multiple arguments.
+
+```clojure
+user=> (= "hello" "hello")
+true
+user=> (= 1 1 1)
+true
+user=> (= 1 2)
+false
+```
 
 ## Common types
 
@@ -50,17 +110,28 @@ java.lang.Boolean
 
 ## Keywords
 
-TODO: Not sure how best to explain this.
+From the Clojure docs:
+`Keywords are symbolic identifiers that evaluate to themselves.
+They provide very fast equality tests.`
+So at a high level a keyword is a constant literal, just like the integer `1234` or
+the string constant `"foobar"`. Keywords look and often behave a lot like strings
+with a couple exceptions.
 
-## Symbols
+* They begin with a `:` so `:foo` is an example keyword, while `"foo"` is an example string.
+* They can't have spaces in them. `"foo bar"` may be a valid string but it's not a valid
+keyword.
+* Keywords get special treatment in Clojure: they act like a function when looking up a value 
+in a hash-map - we'll introduce hash-maps later.
 
-TODO: Not sure if we should have this.
+## Exercises
 
-## Common data structures
+Try to complete the first set of Koans `01_equalities.clj`
+
+# Common data structures
 
 When working in Clojure you'll encounter 3 common types of data structures.
 
-### Lists
+## Lists
 
 A list in Clojure is just a linked list. There are a couple of ways we can create them, the
 first one being the `list` function:
@@ -107,7 +178,11 @@ user=> `()
 ()
 ```
 
-### Vectors
+### Exercises
+
+Try to complete the second set of Koans `02_lists.clj`.
+
+## Vectors
 
 A vector in Clojure is a lot like an array in other languages. That means we can efficiently access
 the index of a vector compared to a list, but adding elements might be a bit more expensive than on
@@ -142,7 +217,7 @@ user=> (conj (vector 1 2 3) 0)
 
 Wait, this isn't what we expect. With a list using `conj` added the new element to the front,
 not to the back. This is because the `conj` function adds elements where it is most efficient
-for the datastructure.
+for the data-structure.
 
 In a list it is cheapest to add an element to the front, we don't
 need to traverse the whole list to get to the end to add the element.
@@ -160,9 +235,47 @@ user=> []
 []
 ```
 
-### Hash Maps
+### Exercises
 
-Hashmaps are just like maps or dictionaries in other languages. They store key/value pairs
+Try to complete the third set of Koans `03_vectors.clj`.
+
+## Sets
+
+Sets are a data-structure that can only contain unique elements. We construct a set with
+the `set` function which takes in some other sequence.
+
+```clojure
+user=> (set [1 2 3 4])
+#{1 4 3 2}
+user=> (set [1 1 2 3])
+#{1 3 2}
+```
+
+So using this method of constructing a set will guarantee us a set of unique elements if we happen
+to have duplicates they just get thrown away.
+
+Finally Clojure has a shorthand way to create sets.
+
+```clojure
+user=> #{1 2 3}
+#{1 3 2}
+```
+
+But using the shorthand we can't initialize it with duplicate elements.
+
+```clojure
+user=> #{1 1 2 3}
+
+IllegalArgumentException Duplicate key: 1  clojure.lang.PersistentHashSet.createWithCheck (PersistentHashSet.java:68)
+```
+
+### Exercises
+
+Try to complete the fourth set of Koans `04_sets.clj`.
+
+## Hash Maps
+
+Hash-maps are just like maps or dictionaries in other languages. They store key/value pairs
 and we can efficiently access values in the hash-map by their keys.
 
 We can create hash-maps with the `hash-map` function. This function takes an even number
@@ -195,6 +308,10 @@ Finally we have a shorthand to build maps, we don't need to use the hash-map fun
 user=> {"red" 100 "blue" 30}
 {"blue" 30, "red" 100}
 ```
+
+### Exercises
+
+Try to complete the fifth set of Koans `05_maps.clj`.
 
 # Saving values into names
 
@@ -278,7 +395,7 @@ Like `map` we will walk through each element of the sequence and apply the funct
 if the function we passed in evaluates to `true` on the element we will keep it, if it's `false`
 we will drop the element from the sequence.
 
-Lets use a builtin function `even?` which returns `true` if the number we pass it is even, otherwise
+Lets use a built-in function `even?` which returns `true` if the number we pass it is even, otherwise
 `false`.
 
 ```clojure
