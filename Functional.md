@@ -271,7 +271,7 @@ IllegalArgumentException Duplicate key: 1  clojure.lang.PersistentHashSet.create
 
 ### Exercises
 
-Try to complete the forth set of Koans `04_sets.clj`.
+Try to complete the fourth set of Koans `04_sets.clj`.
 
 ## Hash Maps
 
