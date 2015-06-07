@@ -10,23 +10,21 @@ functions from functions, and even manipulating functions.
 Periodically we'll mention exercises from the Clojure Koans. These are a series of exercises
 designed to teach Clojure.
 
-They'll look like the following:
+Each one will be an assertion such as the following:
 
 ```clojure
 (= true __)
 ```
 
-The purpose of these exercises is to alter the `__` to something such that the entire expression
-when evaluated in a REPL returns `true`. In this case the answer would be:
+The purpose of these exercises is to alter the `__` to make the assertion pass.
 
 ```clojure
-user=> (= true true)
-true
+(= true true)
 ```
 
 The koans are done incrementally, as you complete each one it will then move on to the next koan.
-
-To get the koans all setup and running checkout: http://clojurekoans.com
+Feel free to go through these at your own pace. To get the koans all setup and running 
+checkout: http://clojurekoans.com
 
 # Syntax
 
