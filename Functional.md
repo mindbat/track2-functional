@@ -1,6 +1,6 @@
 # Clojure as a functional language
 
-Clojure is a functional language. Functions are first class citizens just like
+Clojure is a functional language - that means that functions are first class citizens just like
 any other value type you have already encountered (ints/floats/objects etc.).
 This means that we can pass functions as arguments to other functions, returning
 functions from functions, and even manipulating functions.
@@ -23,8 +23,13 @@ The purpose of these exercises is to alter the `__` to make the assertion pass.
 ```
 
 The koans are done incrementally, as you complete each one it will then move on to the next koan.
-Feel free to go through these at your own pace. To get the koans all setup and running 
-checkout: http://clojurekoans.com
+Feel free to go through these at your own pace.
+
+To get the koans all setup and running
+visit: http://clojurekoans.com
+
+You should have everything you need installed from the Install Fest, so hop down to the
+`Install the Koans` section to get started.
 
 # Syntax
 
@@ -112,11 +117,19 @@ java.lang.Boolean
 
 ## Keywords
 
-TODO: Not sure how best to explain this.
+From the Clojure docs:
+`Keywords are symbolic identifiers that evaluate to themselves.
+They provide very fast equality tests.`
+So at a high level a keyword is a constant literal, just like the integer `1234` or
+the string constant `"foobar"`. Keywords look and often behave a lot like strings
+with a couple exceptions.
 
-## Symbols
-
-TODO: Not sure if we should have this.
+* Instead of being surrounded by quotes, they begin with a `:` so `"foo"` translates
+to `:foo`
+* They can't have spaces in them. `"foo bar"` may be a valid string but it's not a valid
+keyword.
+* They have special interactions with hasmaps which we'll cover later.
+TODO: Mention how you can use a keyword as a function with regard to hashmaps.
 
 ## Common data structures
 
