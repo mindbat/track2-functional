@@ -37,13 +37,13 @@ Compared to other languages, Clojure does function calls slightly differently th
 might expect. To give a quick example:
 
 ```java
-myFunction("foo", "bar")
+myFunction("hi", "bye")
 ```
 
 In Clojure this might look like the following:
 
 ```clojure
-(my-function "foo" "bar")
+(my-function "hi" "bye")
 ```
 
 There are a couple differences here, first thing to note is that we are using a different
@@ -114,11 +114,11 @@ From the Clojure docs:
 `Keywords are symbolic identifiers that evaluate to themselves.
 They provide very fast equality tests.`
 So at a high level a keyword is a constant literal, just like the integer `1234` or
-the string constant `"foobar"`. Keywords look and often behave a lot like strings
+the string constant `"hello"`. Keywords look and often behave a lot like strings
 with a couple exceptions.
 
-* They begin with a `:` so `:foo` is an example keyword, while `"foo"` is an example string.
-* They can't have spaces in them. `"foo bar"` may be a valid string but it's not a valid
+* They begin with a `:` so `:hi` is an example keyword, while `"hi"` is an example string.
+* They can't have spaces in them. `"hi there"` may be a valid string but it's not a valid
 keyword.
 * Keywords get special treatment in Clojure: they act like a function when looking up a value 
 in a hash-map - we'll introduce hash-maps later.
@@ -157,6 +157,7 @@ user=> (conj (list 1 2 3) 0)
 ```
 
 Accessing the head or tail of the list is possible using the `first` and `rest` functions.
+Note that while `first` returns an element, `rest` returns a list. 
 We can also access a specific element using the `nth` function.
 
 ```clojure
@@ -208,7 +209,7 @@ user=> (nth (vector 1 2 3) 0)
 1
 ```
 
-Lets try using the `conj` function from earlier:
+Let's try using the `conj` function from earlier:
 
 ```clojure
 user=> (conj (vector 1 2 3) 0)
@@ -217,7 +218,7 @@ user=> (conj (vector 1 2 3) 0)
 
 Wait, this isn't what we expect. With a list using `conj` added the new element to the front,
 not to the back. This is because the `conj` function adds elements where it is most efficient
-for the data-structure.
+for the data structure.
 
 In a list it is cheapest to add an element to the front, we don't
 need to traverse the whole list to get to the end to add the element.
@@ -278,34 +279,41 @@ Try to complete the fourth set of Koans `04_sets.clj`.
 Hash-maps are just like maps or dictionaries in other languages. They store key/value pairs
 and we can efficiently access values in the hash-map by their keys.
 
+It is common, but not required, to separate key-value pairs in a map by commas. 
+
 We can create hash-maps with the `hash-map` function. This function takes an even number
 of arguments, which is of the format key followed by pair.
 
 ```clojure
-(hash-map "blue" 30 "red" 100)
+(hash-map "blue" 30, "red" 100)
 ```
 
 So this will create a map, with keys "blue" and "red" each with an integer as its value.
+
+While you can use any Clojure elements as keys, most commonly keywords are used for this purpose since lookup by keywords is very fast:
+
+```clojure
+(hash-map :blue 30, :red 100)
+```
 
 To access values from the keys we can use the `get` function which takes a map as its first
 argument and the key for the value we want to retrieve as the second.
 
 ```clojure
-user-> (get (hash-map "blue" 30 "red" 100) "blue")
+user-> (get (hash-map :blue 30, :red 100) :blue)
 30
 ```
-
 We can also build a new map from an old one using the `assoc` function
 
 ```clojure
-user=> (assoc (hash-map "blue" 30 "red" 100) "green" 20)
-{"blue" 30, "green" 20, "red" 100}
+user=> (assoc (hash-map :blue 30, :red 100) :green 20)
+{:blue 30, :green 20, :red 100}
 ```
 
 Finally we have a shorthand to build maps, we don't need to use the hash-map function.
 
 ```clojure
-user=> {"red" 100 "blue" 30}
+user=> {"red" 100, "blue" 30}
 {"blue" 30, "red" 100}
 ```
 
