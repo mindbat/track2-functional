@@ -92,6 +92,18 @@ user=> (= 1 2)
 false
 ```
 
+## `nil`
+
+`nil` is a special value in Clojure, it means "nothing". It is commonly used when a desired value is not found. We will see examples of its use later. For now, just note that it is not equal to any other value:
+
+```clojure
+user=> (= nil false)
+false
+user=> (= nil true)
+false
+user=> (= nil 0)
+false
+```
 ## Common types
 
 Clojure mostly just uses Java classes under the hood. Lets examine some common types using
@@ -319,11 +331,11 @@ user-> (:blue (hash-map :blue 30 :red 100))
 If a key doesn't appear in a map, all three ways of lookup will return a special value `nil`:
 
 ```clojure
-user->  (get (hash-map :blue 30 :red 100) :green)
+user=>  (get (hash-map :blue 30 :red 100) :green)
 nil
-user-> ((hash-map :blue 30 :red 100) :green)
+user=> ((hash-map :blue 30 :red 100) :green)
 nil
-user-> (:green (hash-map :blue 30 :red 100))
+user=> (:green (hash-map :blue 30 :red 100))
 nil
 ```
 
