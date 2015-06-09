@@ -279,13 +279,11 @@ Try to complete the fourth set of Koans `04_sets.clj`.
 Hash-maps are just like maps or dictionaries in other languages. They store key/value pairs
 and we can efficiently access values in the hash-map by their keys.
 
-It is common, but not required, to separate key-value pairs in a map by commas. 
-
 We can create hash-maps with the `hash-map` function. This function takes an even number
 of arguments, which is of the format key followed by pair.
 
 ```clojure
-(hash-map "blue" 30, "red" 100)
+(hash-map "blue" 30 "red" 100)
 ```
 
 So this will create a map, with keys "blue" and "red" each with an integer as its value.
@@ -293,20 +291,46 @@ So this will create a map, with keys "blue" and "red" each with an integer as it
 While you can use any Clojure elements as keys, most commonly keywords are used for this purpose since lookup by keywords is very fast:
 
 ```clojure
-(hash-map :blue 30, :red 100)
+(hash-map :blue 30 :red 100)
 ```
 
 To access values from the keys we can use the `get` function which takes a map as its first
 argument and the key for the value we want to retrieve as the second.
 
 ```clojure
-user-> (get (hash-map :blue 30, :red 100) :blue)
+user-> (get (hash-map :blue 30 :red 100) :blue)
 30
 ```
+
+Note that a map is itself a function that can be applied to look up a value for a key: 
+
+```clojure
+user-> ((hash-map :blue 30 :red 100) :blue)
+30
+```
+
+A keyword is also a function that takes a map as a parameter and returns a value associated with this key:
+
+```clojure
+user-> (:blue (hash-map :blue 30 :red 100))
+30
+```
+
+If a key doesn't appear in a map, all three ways of lookup will return a special value `nil`:
+
+```clojure
+user->  (get (hash-map :blue 30 :red 100) :green)
+nil
+user-> ((hash-map :blue 30 :red 100) :green)
+nil
+user-> (:green (hash-map :blue 30 :red 100))
+nil
+```
+
 We can also build a new map from an old one using the `assoc` function
 
 ```clojure
-user=> (assoc (hash-map :blue 30, :red 100) :green 20)
+user=> (assoc (hash-map :blue 30 :red 100) :green 20)
 {:blue 30, :green 20, :red 100}
 ```
 
