@@ -333,6 +333,12 @@ We can also build a new map from an old one using the `assoc` function
 user=> (assoc (hash-map :blue 30 :red 100) :green 20)
 {:blue 30, :green 20, :red 100}
 ```
+If the key already exists in the map, its value will be replaced by the new one:
+
+```clojure
+user=> (assoc (hash-map :blue 30 :red 100) :blue 20)
+{:blue 20, :red 100}
+```
 
 Finally we have a shorthand to build maps, we don't need to use the hash-map function.
 
