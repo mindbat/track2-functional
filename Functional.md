@@ -433,7 +433,11 @@ false
 user=> (check-condition ["eye" "bob"] is-palindrome?)
 true
 ```
-We can also put together a function right in the call to `check-condition` using the `fn` syntax that we have introduced earlier, and it doesn't even need a name: it's an *anonymous function*. In this case we are checking if the elements of a vector are less than 10:
+
+## Anonymous functions
+In functional languages fucntions are first class citizens, just like numbers, so you can put them together at any point, they don't need to be defined ahead of time. 
+
+In this example we put together a function right in the call to `check-condition` using the `fn` syntax that we have introduced earlier, and it doesn't even need a name: it's an *anonymous function*. In this case we are checking if the elements of a vector are less than 10:
 ```clojure
 user=> (check-condition [4 5] (fn [n] (< n 10)))
 true
