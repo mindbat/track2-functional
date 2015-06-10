@@ -408,7 +408,21 @@ We can also use a shorthand to combine `def` and `fn` which is `defn`.
 
 # Thinking functionally
 
-TODO
+Functional approach to programming means that a solution is constructed as a composition of functions. Each function returns a new entity that's one step closer to the desired results. This is different from the more common imperative approach that keeps changing data and variables in memory (often using loops) until the result is constructed or determined. 
+
+For example, consider figuring out if a string is a palindrome. In a traditional approach one would have a loop in which an index is changing as the string is being traversed that compares the string characters to each other. In a functional appoach it would be to just compare a string to its reverse and return the result. 
+
+```clojure
+user=> (defn is-palindrome? [s] (= s (clojure.string/reverse s)))
+#'user/is-palindrome?
+user=> (is-palindrome? "anna")
+true
+user=> (is-palindrome? "ann")
+false
+```
+Here the function `is-palindrome?` uses functions = and 'clojure.string/reverse` as its elements. It does not directly iterate over the string in a loop. 
+
+This is a simple example. 
 
 ## Recursion
 
