@@ -422,11 +422,26 @@ false
 ```
 Here the function `is-palindrome?` uses functions = and 'clojure.string/reverse` as its elements. It does not directly iterate over the string in a loop. 
 
-This is a simple example. 
+This is a simple example. More interesting examples involve working with functions at all levels of the language. Functions a what's called first class citizens in functional languages, so you can pass them as parameters to other functions, or even construct them "on the fly" and pass them to other functions. Below is a simple, somewhat artificial example of passing a function to a function: suppose we have a vector of at least two elements, and we want to check that both elements satisfy a given condition, but we don't know ahead of time what the condition is. Here is the function:
+```clojure
+user=> (defn check-condition [v f] (and (f (first v)) (f (second v))))
+#'user/check-condition
+user=> (check-condition [3 4] odd?)
+false
+user=> (check-condition ["eye" "bob"] is-palindrome?)
+true
+```
+We can also put together a function right in the call to `check-condition` using the `fn` syntax that we have covered earlier, and it doesn't even need a name: it's called an anonymous function. In this case we are checking if the first tow elements of a vector are less than 10:
+```clojure
+user=> (check-condition [4 5] (fn [n] (< n 10)))
+true
+user=> (check-condition [4 15] (fn [n] (< n 10)))
+false
+```
 
 ## Recursion
 
-TODO
+TODO: now we just need to extend the last example to all the elements of a vector. 
 
 ## Higher-order functions
 
