@@ -94,7 +94,7 @@ false
 
 ## `nil`
 
-`nil` is a special value in Clojure, it means "nothing". It is commonly used when a desired value is not found. We will see examples of its use later. For now, just note that it is not equal to any other value:
+`nil` is a special value in Clojure, it means "nothing". It is commonly used when a desired value is not found. We will see examples of its use later. For now, just note that it is not equal to other values:
 
 ```clojure
 user=> (= nil false)
@@ -141,7 +141,7 @@ Try to complete the first set of Koans `01_equalities.clj`
 
 # Common data structures
 
-When working in Clojure you'll encounter 3 common types of data structures.
+When working in Clojure you'll encounter 3 **do we want to change this to 4 or remove sets?** common types of data structures.
 
 ## Lists
 
@@ -328,7 +328,7 @@ user-> (:blue (hash-map :blue 30 :red 100))
 30
 ```
 
-If a key doesn't appear in a map, all three ways of lookup will return a special value `nil`:
+If a key doesn't appear in a map, all three ways of lookup will return `nil`:
 
 ```clojure
 user=>  (get (hash-map :blue 30 :red 100) :green)
@@ -345,7 +345,7 @@ We can also build a new map from an old one using the `assoc` function
 user=> (assoc (hash-map :blue 30 :red 100) :green 20)
 {:blue 30, :green 20, :red 100}
 ```
-If the key already exists in the map, its value will be replaced by the new one:
+If the key already exists in the map, its value will be replaced by the new one in the resulting map:
 
 ```clojure
 user=> (assoc (hash-map :blue 30 :red 100) :blue 20)
@@ -410,7 +410,7 @@ We can also use a shorthand to combine `def` and `fn` which is `defn`.
 
 Functional approach to programming means that a solution is constructed as a composition of functions. Each function returns a new entity that's one step closer to the desired results. This is different from the more common imperative approach that keeps changing data and variables in memory (often using loops) until the result is constructed or determined. 
 
-For example, consider figuring out if a string is a palindrome. In a traditional approach one would have a loop in which an index is changing as the string is being traversed that compares the string characters to each other. In a functional appoach it would be to just compare a string to its reverse and return the result. 
+For example, consider determining if a string is a palindrome. In a traditional approach one would have a loop in which an index is changing as the string is being traversed that compares the string characters to each other. In a functional appoach one would just compare the string to its reverse and return the result: 
 
 ```clojure
 user=> (defn is-palindrome? [s] (= s (clojure.string/reverse s)))
@@ -420,9 +420,11 @@ true
 user=> (is-palindrome? "ann")
 false
 ```
-Here the function `is-palindrome?` uses functions = and 'clojure.string/reverse` as its elements. It does not directly iterate over the string in a loop. 
+Here the function `is-palindrome?` uses functions = and `clojure.string/reverse` as its elements. It does not directly iterate over the string in a loop. 
 
-This is a simple example. More interesting examples involve working with functions at all levels of the language. Functions a what's called first class citizens in functional languages, so you can pass them as parameters to other functions, or even construct them "on the fly" and pass them to other functions. Below is a simple, somewhat artificial example of passing a function to a function: suppose we have a vector of at least two elements, and we want to check that both elements satisfy a given condition, but we don't know ahead of time what the condition is. Here is the function:
+More interesting examples involve working with functions at all levels of the language. Functions are what's called *first class citizens* in functional languages, so you can pass them as parameters to other functions, or even construct them "on the fly" like you would calculate numbers. 
+
+Below is a simple, somewhat artificial example of passing a function to a function: suppose we have a vector of at least two elements, and we want to check that both elements satisfy a given condition, but we don't know ahead of time what the condition is. Here is the function and some examples of its usage:
 ```clojure
 user=> (defn check-condition [v f] (and (f (first v)) (f (second v))))
 #'user/check-condition
@@ -431,7 +433,7 @@ false
 user=> (check-condition ["eye" "bob"] is-palindrome?)
 true
 ```
-We can also put together a function right in the call to `check-condition` using the `fn` syntax that we have covered earlier, and it doesn't even need a name: it's called an anonymous function. In this case we are checking if the first tow elements of a vector are less than 10:
+We can also put together a function right in the call to `check-condition` using the `fn` syntax that we have introduced earlier, and it doesn't even need a name: it's an *anonymous function*. In this case we are checking if the elements of a vector are less than 10:
 ```clojure
 user=> (check-condition [4 5] (fn [n] (< n 10)))
 true
