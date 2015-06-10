@@ -1,0 +1,15 @@
+h1 {
+    text-align: center;
+}
+
+td.name {
+	text-align: right;
+}
+
+table.table td {
+	padding: 2px 1rem !important;
+}
+
+#stats {
+	max-width: 40rem;
+}
