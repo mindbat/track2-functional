@@ -37,13 +37,13 @@ Compared to other languages, Clojure does function calls slightly differently th
 might expect. To give a quick example:
 
 ```java
-myFunction("foo", "bar")
+myFunction("hi", "bye")
 ```
 
 In Clojure this might look like the following:
 
 ```clojure
-(my-function "foo" "bar")
+(my-function "hi" "bye")
 ```
 
 There are a couple differences here, first thing to note is that we are using a different
@@ -92,6 +92,18 @@ user=> (= 1 2)
 false
 ```
 
+## `nil`
+
+`nil` is a special value in Clojure, it means "nothing". It is commonly used when a desired value is not found. We will see examples of its use later. For now, just note that it is not equal to other values:
+
+```clojure
+user=> (= nil false)
+false
+user=> (= nil true)
+false
+user=> (= nil 0)
+false
+```
 ## Common types
 
 Clojure mostly just uses Java classes under the hood. Lets examine some common types using
@@ -114,11 +126,11 @@ From the Clojure docs:
 `Keywords are symbolic identifiers that evaluate to themselves.
 They provide very fast equality tests.`
 So at a high level a keyword is a constant literal, just like the integer `1234` or
-the string constant `"foobar"`. Keywords look and often behave a lot like strings
+the string constant `"hello"`. Keywords look and often behave a lot like strings
 with a couple exceptions.
 
-* They begin with a `:` so `:foo` is an example keyword, while `"foo"` is an example string.
-* They can't have spaces in them. `"foo bar"` may be a valid string but it's not a valid
+* They begin with a `:` so `:hi` is an example keyword, while `"hi"` is an example string.
+* They can't have spaces in them. `"hi there"` may be a valid string but it's not a valid
 keyword.
 * Keywords get special treatment in Clojure: they act like a function when looking up a value 
 in a hash-map - we'll introduce hash-maps later.
@@ -129,7 +141,7 @@ Try to complete the first set of Koans `01_equalities.clj`
 
 # Common data structures
 
-When working in Clojure you'll encounter 3 common types of data structures.
+When working in Clojure you'll encounter 3 **do we want to change this to 4 or remove sets?** common types of data structures.
 
 ## Lists
 
@@ -157,6 +169,7 @@ user=> (conj (list 1 2 3) 0)
 ```
 
 Accessing the head or tail of the list is possible using the `first` and `rest` functions.
+Note that while `first` returns an element, `rest` returns a list. 
 We can also access a specific element using the `nth` function.
 
 ```clojure
@@ -208,7 +221,7 @@ user=> (nth (vector 1 2 3) 0)
 1
 ```
 
-Lets try using the `conj` function from earlier:
+Let's try using the `conj` function from earlier:
 
 ```clojure
 user=> (conj (vector 1 2 3) 0)
@@ -217,7 +230,7 @@ user=> (conj (vector 1 2 3) 0)
 
 Wait, this isn't what we expect. With a list using `conj` added the new element to the front,
 not to the back. This is because the `conj` function adds elements where it is most efficient
-for the data-structure.
+for the data structure.
 
 In a list it is cheapest to add an element to the front, we don't
 need to traverse the whole list to get to the end to add the element.
@@ -287,25 +300,62 @@ of arguments, which is of the format key followed by pair.
 
 So this will create a map, with keys "blue" and "red" each with an integer as its value.
 
+While you can use any Clojure elements as keys, most commonly keywords are used for this purpose since lookup by keywords is very fast:
+
+```clojure
+(hash-map :blue 30 :red 100)
+```
+
 To access values from the keys we can use the `get` function which takes a map as its first
 argument and the key for the value we want to retrieve as the second.
 
 ```clojure
-user-> (get (hash-map "blue" 30 "red" 100) "blue")
+user-> (get (hash-map :blue 30 :red 100) :blue)
 30
+```
+
+Note that a map is itself a function that can be applied to look up a value for a key: 
+
+```clojure
+user-> ((hash-map :blue 30 :red 100) :blue)
+30
+```
+
+A keyword is also a function that takes a map as a parameter and returns a value associated with this key:
+
+```clojure
+user-> (:blue (hash-map :blue 30 :red 100))
+30
+```
+
+If a key doesn't appear in a map, all three ways of lookup will return `nil`:
+
+```clojure
+user=>  (get (hash-map :blue 30 :red 100) :green)
+nil
+user=> ((hash-map :blue 30 :red 100) :green)
+nil
+user=> (:green (hash-map :blue 30 :red 100))
+nil
 ```
 
 We can also build a new map from an old one using the `assoc` function
 
 ```clojure
-user=> (assoc (hash-map "blue" 30 "red" 100) "green" 20)
-{"blue" 30, "green" 20, "red" 100}
+user=> (assoc (hash-map :blue 30 :red 100) :green 20)
+{:blue 30, :green 20, :red 100}
+```
+If the key already exists in the map, its value will be replaced by the new one in the resulting map:
+
+```clojure
+user=> (assoc (hash-map :blue 30 :red 100) :blue 20)
+{:blue 20, :red 100}
 ```
 
 Finally we have a shorthand to build maps, we don't need to use the hash-map function.
 
 ```clojure
-user=> {"red" 100 "blue" 30}
+user=> {"red" 100, "blue" 30}
 {"blue" 30, "red" 100}
 ```
 
@@ -358,11 +408,46 @@ We can also use a shorthand to combine `def` and `fn` which is `defn`.
 
 # Thinking functionally
 
-TODO
+Functional approach to programming means that a solution is constructed as a composition of functions. Each function returns a new entity that's one step closer to the desired results. This is different from the more common imperative approach that keeps changing data and variables in memory (often using loops) until the result is constructed or determined. 
 
-## Recursion
+For example, consider determining if a string is a palindrome. In a traditional approach one would have a loop in which an index is changing as the string is being traversed that compares the string characters to each other. In a functional appoach one would just compare the string to its reverse and return the result: 
 
-TODO
+```clojure
+user=> (defn is-palindrome? [s] (= s (clojure.string/reverse s)))
+#'user/is-palindrome?
+user=> (is-palindrome? "anna")
+true
+user=> (is-palindrome? "ann")
+false
+```
+Here the function `is-palindrome?` uses functions = and `clojure.string/reverse` as its elements. It does not directly iterate over the string in a loop. 
+
+More interesting examples involve working with functions at all levels of the language. Functions are what's called *first class citizens* in functional languages, so you can pass them as parameters to other functions, or even construct them "on the fly" like you would calculate numbers. 
+
+Below is a simple, somewhat artificial example of passing a function to a function: suppose we have a vector of at least two elements, and we want to check that both elements satisfy a given condition, but we don't know ahead of time what the condition is. Here is the function and some examples of its usage:
+```clojure
+user=> (defn check-condition [v f] (and (f (first v)) (f (second v))))
+#'user/check-condition
+user=> (check-condition [3 4] odd?)
+false
+user=> (check-condition ["eye" "bob"] is-palindrome?)
+true
+```
+
+### Anonymous functions
+In functional languages fucntions are first class citizens, just like numbers, so you can put them together at any point, they don't need to be defined ahead of time. 
+
+In this example we put together a function right in the call to `check-condition` using the `fn` syntax that we have introduced earlier, and it doesn't even need a name: it's an *anonymous function*. In this case we are checking if the elements of a vector are less than 10:
+```clojure
+user=> (check-condition [4 5] (fn [n] (< n 10)))
+true
+user=> (check-condition [4 15] (fn [n] (< n 10)))
+false
+```
+
+### Recursion
+
+TODO: now we just need to extend the last example to all the elements of a vector. 
 
 ## Higher-order functions
 
