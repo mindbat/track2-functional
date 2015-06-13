@@ -33,8 +33,7 @@ You should have everything you need installed from the Install Fest, so hop down
 
 # Syntax
 
-Compared to other languages, Clojure does function calls slightly differently than one
-might expect. To give a quick example:
+Compared to other languages, Clojure does function calls slightly differently than teh majority of common programming languages. To give a quick example:
 
 ```java
 myFunction("hi", "bye")
@@ -60,7 +59,7 @@ commas are simply treated as whitespace so we don't need them.
 
 ### Math
 
-In Clojure everything is a function, there is no notion of operators. Additionally all of the
+Unlike common languages, such as JavaScript, in which `+` is an operation that is used in arithmetic expressions, and square root `sqrt` is a function, in Clojure every action is a function, there is no notion of operators. Additionally all of the
 math operators take a variable number of arguments.
 
 ```clojure
@@ -388,7 +387,7 @@ We can use the `fn` function to create new functions, we can use the `def` funct
 previous section to associate the new function with a name. Lets write a simple square function.
 
 `fn` takes two arguments, the first argument is a vector of the arguments and the second is the
-operation we want to perform.
+result we want to return.
 
 ```clojure
 user=> (def square (fn [number] (* number number)))
@@ -444,6 +443,17 @@ true
 user=> (check-condition [4 15] (fn [n] (< n 10)))
 false
 ```
+
+There is an even shorter notation for anonymous functions known as a *function literal*. Here the `#( )` denotes the body of the function, and the arguments are referred to as `%1, %2`, etc., or just `%` if there is only one. Here is the same example as above, only with the function literal: 
+```clojure
+user=> (check-condition [4 5] #(< % 10))
+true
+user=> (check-condition [4 15] #(< % 10))
+false
+```
+### Exercises
+
+Try to complete the fifth set of Koans `06_functions.clj`.
 
 ### Recursion
 
