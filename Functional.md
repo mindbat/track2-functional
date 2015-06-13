@@ -421,34 +421,36 @@ false
 ```
 Here the function `is-palindrome?` uses functions = and `clojure.string/reverse` as its elements. It does not directly iterate over the string in a loop. 
 
+Note that functions that return a boolean traditionally have names that end with a question mark. Such functions are called *predicates*. Note how the question mark helps you understand what the function call is doing.
+
 More interesting examples involve working with functions at all levels of the language. Functions are what's called *first class citizens* in functional languages, so you can pass them as parameters to other functions, or even construct them "on the fly" like you would calculate numbers. 
 
 Below is a simple, somewhat artificial example of passing a function to a function: suppose we have a vector of at least two elements, and we want to check that both elements satisfy a given condition, but we don't know ahead of time what the condition is. Here is the function and some examples of its usage:
 ```clojure
-user=> (defn check-condition [v f] (and (f (first v)) (f (second v))))
-#'user/check-condition
-user=> (check-condition [3 4] odd?)
+user=> (defn condition-holds? [f v] (and (f (first v)) (f (second v))))
+#'user/holds-condition?
+user=> (condition-holds? odd? [3 4])
 false
-user=> (check-condition ["eye" "bob"] is-palindrome?)
+user=> (condition-holds? is-palindrome? ["eye" "bob"])
 true
 ```
 
 ### Anonymous functions
 In functional languages fucntions are first class citizens, just like numbers, so you can put them together at any point, they don't need to be defined ahead of time. 
 
-In this example we put together a function right in the call to `check-condition` using the `fn` syntax that we have introduced earlier, and it doesn't even need a name: it's an *anonymous function*. In this case we are checking if the elements of a vector are less than 10:
+In this example we put together a function right in the call to `condition-holds?` using the `fn` syntax that we have introduced earlier, and it doesn't even need a name: it's an *anonymous function*. In this case we are checking if the elements of a vector are less than 10:
 ```clojure
-user=> (check-condition [4 5] (fn [n] (< n 10)))
+user=> (condition-holds? (fn [n] (< n 10)) [4 5])
 true
-user=> (check-condition [4 15] (fn [n] (< n 10)))
+user=> (condition-holds? (fn [n] (< n 10)) [4 15])
 false
 ```
 
 There is an even shorter notation for anonymous functions known as a *function literal*. Here the `#( )` denotes the body of the function, and the arguments are referred to as `%1, %2`, etc., or just `%` if there is only one. Here is the same example as above, only with the function literal: 
 ```clojure
-user=> (check-condition [4 5] #(< % 10))
+user=> (condition-holds? #(< % 10) [4 5])
 true
-user=> (check-condition [4 15] #(< % 10))
+user=> (condition-holds? #(< % 10) [4 15])
 false
 ```
 ### Exercises
@@ -456,6 +458,8 @@ false
 Try to complete the fifth set of Koans `06_functions.clj`.
 
 ### Recursion
+
+But what if we want to check that a condition holds for all elements of a vector, but we don't know how long the vector is? 
 
 TODO: now we just need to extend the last example to all the elements of a vector. 
 
