@@ -459,9 +459,17 @@ Try to complete the fifth set of Koans `06_functions.clj`.
 
 ### Recursion
 
-But what if we want to check that a condition holds for all elements of a vector, but we don't know how long the vector is? 
+But what if we want to check that a condition holds for all elements of a vector, but we don't know how long the vector is? There are several ways of accomplishing it. 
 
-TODO: now we just need to extend the last example to all the elements of a vector. 
+Here we will look at the approach called *recursion* which breaks the vector into the first element and the rest of the elements, does some work on the element (in our case checks if it satisfies a given condition), and then *calls the same function* again *on the rest* of the vector if needed. 
+
+Developing recursive functions is a bit more involved process than what we have done so far, so let's build it step-by-step. 
+
+When developing a fucntion, it is useful to start by writing down how you expect it to work: 
+```clojure
+
+```
+Obviously, this doesn't work yet because the function `holds-for-all?` doesn't exist yet.  
 
 ## Higher-order functions
 
