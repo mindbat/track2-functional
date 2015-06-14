@@ -32,9 +32,8 @@ Arguments:
         messages ["Hello"
                   "Good news everyone!"
                   "What are we going to do tonight Brain?"]]
-    (doall 
-      (pmap (fn [name message]
-              (add-message conv name message))
+    (doall
+      (pmap (partial add-message conv)
             (take message-count (cycle names))
             (take message-count (cycle messages))
             ))
@@ -42,50 +41,61 @@ Arguments:
 
 
 (deftest parallel-add-messages
-  (let [messages 5000
-        message-limit 50]
+  (let [messages 50000
+        message-limit 20]
     (are [constructor add-message extract]
-         (let [conv (extract
-                      (simulate-conversation constructor
+         (let [start  (System/currentTimeMillis)
+               result (simulate-conversation constructor
                                              message-limit
                                              add-message
-                                             messages))]
+                                             messages)
+               finish (System/currentTimeMillis)
+               conversation (extract result)]
+           (printf "\nSimulation completed in %dms: %s %s\n"
+                   (- finish start) 'constructor 'add-message)
 
-           (is (= messages (:total conv))
+           (is (= messages (:total conversation))
                (format "Total Message Count must match iteration count: %s %s"
                        'constructor 'add-message))
 
-           (is (= messages (reduce + (vals (:counts conv))))
+           (is (= messages (reduce + (vals (:counts conversation))))
                (format "Sum of user message counts must match iteration count: %s %s"
                        'constructor 'add-message))
 
-           (is (= message-limit (:limit conv) )
+           (is (= message-limit (:limit conversation) )
                (format "Conversation's limit must match expected message limit: %s %s"
                        'constructor 'add-message))
 
-           (is (= message-limit (count (:messages conv)))
+           (is (= message-limit (count (:messages conversation)))
                (format "Number of messages must equal the message limit: %s %s"
                        'constructor 'add-message)))
 
-         new-mutable-conversation-db
-         mutating-add-message
-         identity
+         ;;  This will likely throw exceptions and not work at all
+         ;new-mutable-conversation-db
+         ;mutating-add-message
+         ;identity
 
-         new-mutable-concurrent-conversation-db
-         mutating-add-message
-         identity
+         ;;  This won't throw exceptions, but usually fails with
+         ;;  random, wrong results
+         ;new-mutable-concurrent-conversation-db
+         ;mutating-add-message
+         ;identity
 
+         ;;  This should work
          new-mutable-conversation-db
          locking-add-message
          identity
 
+         ;;  This should work too
          new-mutable-concurrent-conversation-db
          locking-add-message
          identity
 
+         ;;  This should work and should perform noticeably better
          new-atomic-conversation-db
          atomic-add-message
-         deref)))
+         deref
+         )))
 
 
 (defn integer-value
@@ -97,10 +107,11 @@ Arguments:
         (nil? x)    0
         :else       (recur (str x))))
 
+
 (defn extract-chat-messages
   "Extract the message history from the HTML of a chat page"
-  [page]
-  (let [msg-rows (html/select page [:#messages :tr])]
+  [chat-html]
+  (let [msg-rows (html/select chat-html [:#messages :tr])]
     (html/let-select msg-rows
       [name [:td.name html/text]
        msg  [:td.message html/text]]
@@ -110,9 +121,9 @@ Arguments:
 
 (defn extract-chat-user-counts
   "Extract the per-user message counts from the HTML of a chat page"
-  [page]
+  [chat-html]
   (let [count-rows (html/select
-                     page [:#stats :tr.count])]
+                     chat-html [:#stats :tr.count])]
     (into {}
           (html/let-select count-rows
             [name   [:td.name html/text]
@@ -124,12 +135,12 @@ Arguments:
   "Take the response from a chat server and turn it back into
 conversation data"
   [response]
-  (let [page      (jsoup/parser (:body response))
-        messages  (extract-chat-messages page)
-        counts    (extract-chat-user-counts page)
+  (let [chat-html (jsoup/parser (:body response))
+        messages  (extract-chat-messages chat-html)
+        counts    (extract-chat-user-counts chat-html)
         total     (integer-value
                     (first
-                      (html/select page [:#total html/text])))]
+                      (html/select chat-html [:#total html/text])))]
     {:messages    messages
      :counts      counts
      :total       total}))
@@ -179,9 +190,9 @@ Returns the HTML response converted back into conversation data."
             (take message-count rand-messages)))
     (read-messages url)
     ))
-    
+
 #_(chat-bot "http://localhost:8000/"
-           5000
+           50
            ["Thing One" "Thing Two"]
            ["They can"
             "Find Anything Anything Anything"
