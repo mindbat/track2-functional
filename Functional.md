@@ -47,7 +47,7 @@ In Clojure this might look like the following:
 ```
 
 There are a couple differences here, first thing to note is that we are using a different
-case style. In Clojure we don't use camel case but instead lisp case which is dash separated.
+case style. In Clojure we don't use camel case but instead kebab case which is dash separated.
 
 Another thing is that we've placed the function inside the parenthesis. In Clojure a function
 call is always an open paren followed by the function we want to call, followed by any arguments
@@ -187,7 +187,7 @@ use the following:
 ```clojure
 user=> '(1 2 3)
 (1 2 3)
-user=> `()
+user=> '()
 ()
 ```
 
