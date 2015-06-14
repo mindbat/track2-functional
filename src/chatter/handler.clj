@@ -5,8 +5,7 @@
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.server.standalone :as server]
-            [hiccup.page :as page]
-            [hiccup.form :as form])
+            [hiccup.page :as page])
 
   (:import  [java.util HashMap LinkedList Map]
             [java.util.concurrent ConcurrentHashMap
@@ -25,7 +24,8 @@ Conversation Database that will hold a limited number of messages."
 
 (defn mutating-add-message
   "Using standard Java collections APIs, add a new message
-to a conversation and perform all necessary accounting."
+to a conversation and perform all necessary accounting.
+"
   [^Map conversation name new-message]
   (let [limit    (.get conversation :limit)
         total    (.get conversation :total)
@@ -72,6 +72,10 @@ the conversation"
   "Increments a number.  Treats nil as 0"
   (fnil inc 0))
 
+(defn new-immutable-conversation-db
+  [message-limit]
+  {:limit message-limit})
+
 (defn immutable-add-message
   "Uses immutable Clojure collections to combine a
 conversation and a new message into a new conversation"
@@ -82,12 +86,12 @@ conversation and a new message into a new conversation"
    :messages (take limit
                    (cons {:name name :message message}
                          messages))})
-  
+
 (defn new-atomic-conversation-db
   "Construct a new Atomic Conversation Database: 
 Conversation data wrapped in an Atom"
   [message-limit]
-  (atom {:limit message-limit}))
+  (atom (new-immutable-conversation-db message-limit)))
 
 (defn atomic-add-message
   "Add a message to an Atomic Conversation Database"
@@ -100,10 +104,22 @@ Conversation data wrapped in an Atom"
            coll))
 
 
+(defn input-text
+  "Return a Hiccup style input field with a label"
+  ([name label]
+    (input-text name label nil))
+  ([name label value]
+    [:div.form-group
+     [:label.sr-only {:for name} label]
+     [(keyword (format "input#%s.form-control" name))
+      {:type "text" :name name
+       :placeholder label
+       :value value}]]))
+
 (defn generate-message-view
   "This generates the HTML for displaying messages"
   ([conversation]
-    (generate-message-view conversation ""))
+    (generate-message-view conversation nil))
   ([conversation name]
     (page/html5
       [:head
@@ -113,41 +129,52 @@ Conversation data wrapped in an Atom"
        (page/include-js  "//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js")
        (page/include-css "/chatter.css")]
       [:body
-       [:h1 "Our Chat App"]
-       [:p
-        (form/form-to
-          [:post "/"]
-          "Name: " (form/text-field {:id "name" :value name} "name")
-          [:br]
-          "Message: " (form/text-field {:id "msg"} "msg")
-          [:br]
-          (form/submit-button "Submit"))]
-       [:p
-        [:table#messages.table.table-striped
-         (map (fn [m] [:tr [:td.name (:name m)]
-                           [:td.message (:message m)]])
-              (:messages conversation))]]
-       [:p [:h3 "Conversation Statistics"]
-        [:table#stats.table.table-striped
-         (cons [:tr [:td.name "Total Messages"]
-                    [:td#total (:total conversation 0)]]
-               (map (fn [[name count]]
-                      [:tr.count
-                       [:td.name name]
-                       [:td.count count]])
-                    (desc-sort-by
-                      val (:counts conversation))))]]])))
+       [:div.container
+        [:h1 "Our Chat App"] [:br]
+        [:div.row
+         [:form
+          {:method "POST" :action "/"}
+
+          [:div.col-xs-2.col-xs-offset-2
+           (input-text :name "Your name" name)]
+
+          [:div.col-xs-5
+           (input-text :msg "What to say")]
+
+          [:div.col-xs-1
+           [:input#post.btn.btn-default
+            {:type "submit" :value "Say It!"}]]]]
+
+        [:div.row
+         [:div.col-xs-8.col-md-9.col-lg-9
+          [:h3 "Conversation"]
+          [:table#messages.table.table-striped.table-condensed
+           (map (fn [m] [:tr [:td.name (:name m)]
+                             [:td.message (:message m)]])
+                (reverse (:messages conversation)))]]
+
+         [:div.col-xs-4.col-md-3.col-lg-3
+          [:h3 "Stats"]
+          [:table#stats.table.table-striped.table-condensed
+           (cons [:tr [:td.name "Total Messages"]
+                      [:td#total (:total conversation 0)]]
+                 (map (fn [[name count]]
+                        [:tr.count
+                         [:td.name name]
+                         [:td.count count]])
+                      (desc-sort-by
+                        val (:counts conversation))))]]]]])))
 
 (defonce CONVERSATION-DB
-  (new-atomic-conversation-db 20))
+  (new-mutable-concurrent-conversation-db 20))
 
 (defroutes app-routes
-  (GET "/" [] (generate-message-view @CONVERSATION-DB))
+  (GET "/" [] (generate-message-view CONVERSATION-DB))
   (POST "/" {params :params}
     (let [name-param (get params "name")
           msg-param (get params "msg")
-          new-messages (atomic-add-message CONVERSATION-DB
-                                           name-param msg-param)]
+          new-messages (mutating-add-message CONVERSATION-DB
+                                             name-param msg-param)]
       (generate-message-view new-messages name-param)
       ))
   (route/resources "/")

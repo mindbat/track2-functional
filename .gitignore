@@ -1,6 +1,8 @@
 # .gitignore
 
 # Editor artifacts
+.classpath
+.project
 .nrepl-port
 *~
 
@@ -8,3 +10,5 @@
 # silly Mac filesystem
 *.DS_Store*
 *._*
+/bin/
+/target/
