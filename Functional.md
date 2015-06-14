@@ -577,5 +577,6 @@ A quick example is we can reduce `+` over a sequence of numbers to add them all 
 user=> (reduce + [1 2 3 4])
 10
 ```
+TO-DO: add an exercise involving higher-order functions
 
-
+TO-DO: add resources for independent work 
