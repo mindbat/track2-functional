@@ -25,11 +25,14 @@ The purpose of these exercises is to alter the `__` to make the assertion pass.
 The koans are done incrementally, as you complete each one it will then move on to the next koan.
 Feel free to go through these at your own pace.
 
-To get the koans all setup and running
-visit: http://clojurekoans.com
+To get the koans all setup and running:
 
-You should have everything you need installed from the Install Fest, so hop down to the
-`Install the Koans` section to get started.
+	git clone git@github.com:clojurebridge-minneapolis/clojure-koans.git
+	cd clojure-koans
+	lein koan run
+
+It should give you a failed message, as you fix each broken assertion and save it should walk to
+the next problem.
 
 # Syntax
 
