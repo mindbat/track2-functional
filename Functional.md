@@ -379,6 +379,20 @@ user=> PI
 3.14
 ```
 
+# `if` statement
+It is very common that the result of a computation depends on a condition. The most straightforward conditional statement in Clojue is `if`. It has three parts: the condition, the result when the condition is true, and the result when the condition is false. Using it, we can compute expressions such as the absolute value of a number:
+```clojure
+user=> (def x -5)
+#'user/x
+user=> (if (neg? x) (- x) x)
+5
+user=> (def y 7)
+#'user/y
+user=> (if (neg? y) (- y) y)
+7
+```
+
+
 # Defining your own functions
 
 So far we've seen how we can use builtin functions, but how do we define our own?
