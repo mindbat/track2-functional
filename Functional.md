@@ -379,7 +379,7 @@ user=> PI
 3.14
 ```
 
-# `if` statement
+# Conditional computation: `if` statement
 It is very common that the result of a computation depends on a condition. The most straightforward conditional statement in Clojue is `if`. It has three parts: the condition, the result when the condition is true, and the result when the condition is false. Using it, we can compute expressions such as the absolute value of a number:
 ```clojure
 user=> (def x -5)
@@ -481,9 +481,38 @@ Developing recursive functions is a bit more involved process than what we have 
 
 When developing a fucntion, it is useful to start by writing down how you expect it to work: 
 ```clojure
-
+user=> (holds-for-all? odd? [1 3 -1])
+true
+user=> (holds-for-all? odd? [1 3 0 -1])
+false
+user=> (holds-for-all? #(< % 5) [5])
+false
+user=> (holds-for-all? #(<= % 5) [5])
+true
 ```
-Obviously, this doesn't work yet because the function `holds-for-all?` doesn't exist yet.  
+Obviously, this doesn't work yet because the function `holds-for-all?` doesn't exist yet. But these cases help us understand how the function works:
+1. If there is only one element, it returns the result of the predicate on that one element (see the last two cases). 
+2. If there is more than one element then it returns true only if the predicate is true on the first element and on the rest of them. 
+
+The first case (one element) is called the *base* cases: the function immediately retruns the answer, there is no "rest of the vector" to look at. Let's sketch out this case in code, assuming that 'f' is the predicate and 'v' is the vector: `(if (empty? (rest v)) (f (first v)) ....` (we don't know yet what gets returned in the case when the predicate is false). 
+
+Note that the base case happens when there is only one element in the vector, and we check it by cehcking if the rest of the elements is empty. 
+
+The second case is the so-called *recursive step*: it combines the result for the first element with the result of the same computation on the rest of them. This is where we will be calling the function recursively to determine if the predicate holds for all elements in the rest of the vector. Since our function works on any sequence of elements (by design), it will work on the rest of the elements of `v`. 
+
+TO-DO: add a bit more explaination, perhaps? 
+
+Although this seems a bit weird, let's right down what the recursive step looks like, literally putting the second case in code as it is written in English: '(and (f (first v)) (holds-for-all? f (rest v)))`. One thing that may be a bit tricky here is that we need to pass not only the rest of the vector, but also the predicate to the recursive function call. This is simply because our function *does* take two parameters and will give an error when called with just one. 
+
+When we combine the two cases above and add the necessary syntax, we get: 
+
+```clojure
+(defn holds-for-all? [f v]
+  (if (empty? (rest v)) (f (first v))
+    (and (f (first v)) (holds-for-all? f (rest v)))))
+```
+
+TO-DO: walk through an example. 
 
 ## Higher-order functions
 
