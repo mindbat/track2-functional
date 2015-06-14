@@ -36,8 +36,7 @@ the next problem.
 
 # Syntax
 
-Compared to other languages, Clojure does function calls slightly differently than one
-might expect. To give a quick example:
+Compared to other languages, Clojure does function calls slightly differently than teh majority of common programming languages. To give a quick example:
 
 ```java
 myFunction("hi", "bye")
@@ -63,7 +62,7 @@ commas are simply treated as whitespace so we don't need them.
 
 ### Math
 
-In Clojure everything is a function, there is no notion of operators. Additionally all of the
+Unlike common languages, such as JavaScript, in which `+` is an operation that is used in arithmetic expressions, and square root `sqrt` is a function, in Clojure every action is a function, there is no notion of operators. Additionally all of the
 math operators take a variable number of arguments.
 
 ```clojure
@@ -383,6 +382,20 @@ user=> PI
 3.14
 ```
 
+# Conditional computation: `if` statement
+It is very common that the result of a computation depends on a condition. The most straightforward conditional statement in Clojue is `if`. It has three parts: the condition, the result when the condition is true, and the result when the condition is false. Using it, we can compute expressions such as the absolute value of a number:
+```clojure
+user=> (def x -5)
+#'user/x
+user=> (if (neg? x) (- x) x)
+5
+user=> (def y 7)
+#'user/y
+user=> (if (neg? y) (- y) y)
+7
+```
+
+
 # Defining your own functions
 
 So far we've seen how we can use builtin functions, but how do we define our own?
@@ -391,7 +404,7 @@ We can use the `fn` function to create new functions, we can use the `def` funct
 previous section to associate the new function with a name. Lets write a simple square function.
 
 `fn` takes two arguments, the first argument is a vector of the arguments and the second is the
-operation we want to perform.
+result we want to return.
 
 ```clojure
 user=> (def square (fn [number] (* number number)))
@@ -425,32 +438,84 @@ false
 ```
 Here the function `is-palindrome?` uses functions = and `clojure.string/reverse` as its elements. It does not directly iterate over the string in a loop. 
 
+Note that functions that return a boolean traditionally have names that end with a question mark. Such functions are called *predicates*. Note how the question mark helps you understand what the function call is doing.
+
 More interesting examples involve working with functions at all levels of the language. Functions are what's called *first class citizens* in functional languages, so you can pass them as parameters to other functions, or even construct them "on the fly" like you would calculate numbers. 
 
 Below is a simple, somewhat artificial example of passing a function to a function: suppose we have a vector of at least two elements, and we want to check that both elements satisfy a given condition, but we don't know ahead of time what the condition is. Here is the function and some examples of its usage:
 ```clojure
-user=> (defn check-condition [v f] (and (f (first v)) (f (second v))))
-#'user/check-condition
-user=> (check-condition [3 4] odd?)
+user=> (defn condition-holds? [f v] (and (f (first v)) (f (second v))))
+#'user/holds-condition?
+user=> (condition-holds? odd? [3 4])
 false
-user=> (check-condition ["eye" "bob"] is-palindrome?)
+user=> (condition-holds? is-palindrome? ["eye" "bob"])
 true
 ```
 
 ### Anonymous functions
 In functional languages fucntions are first class citizens, just like numbers, so you can put them together at any point, they don't need to be defined ahead of time. 
 
-In this example we put together a function right in the call to `check-condition` using the `fn` syntax that we have introduced earlier, and it doesn't even need a name: it's an *anonymous function*. In this case we are checking if the elements of a vector are less than 10:
+In this example we put together a function right in the call to `condition-holds?` using the `fn` syntax that we have introduced earlier, and it doesn't even need a name: it's an *anonymous function*. In this case we are checking if the elements of a vector are less than 10:
 ```clojure
-user=> (check-condition [4 5] (fn [n] (< n 10)))
+user=> (condition-holds? (fn [n] (< n 10)) [4 5])
 true
-user=> (check-condition [4 15] (fn [n] (< n 10)))
+user=> (condition-holds? (fn [n] (< n 10)) [4 15])
 false
 ```
 
+There is an even shorter notation for anonymous functions known as a *function literal*. Here the `#( )` denotes the body of the function, and the arguments are referred to as `%1, %2`, etc., or just `%` if there is only one. Here is the same example as above, only with the function literal: 
+```clojure
+user=> (condition-holds? #(< % 10) [4 5])
+true
+user=> (condition-holds? #(< % 10) [4 15])
+false
+```
+### Exercises
+
+Try to complete the fifth set of Koans `06_functions.clj`.
+
 ### Recursion
 
-TODO: now we just need to extend the last example to all the elements of a vector. 
+But what if we want to check that a condition holds for all elements of a vector, but we don't know how long the vector is? There are several ways of accomplishing it. 
+
+Here we will look at the approach called *recursion* which breaks the vector into the first element and the rest of the elements, does some work on the element (in our case checks if it satisfies a given condition), and then *calls the same function* again *on the rest* of the vector if needed. 
+
+Developing recursive functions is a bit more involved process than what we have done so far, so let's build it step-by-step. 
+
+When developing a fucntion, it is useful to start by writing down how you expect it to work: 
+```clojure
+user=> (holds-for-all? odd? [1 3 -1])
+true
+user=> (holds-for-all? odd? [1 3 0 -1])
+false
+user=> (holds-for-all? #(< % 5) [5])
+false
+user=> (holds-for-all? #(<= % 5) [5])
+true
+```
+Obviously, this doesn't work yet because the function `holds-for-all?` doesn't exist yet. But these cases help us understand how the function works:
+1. If there is only one element, it returns the result of the predicate on that one element (see the last two cases). 
+2. If there is more than one element then it returns true only if the predicate is true on the first element and on the rest of them. 
+
+The first case (one element) is called the *base* cases: the function immediately retruns the answer, there is no "rest of the vector" to look at. Let's sketch out this case in code, assuming that 'f' is the predicate and 'v' is the vector: `(if (empty? (rest v)) (f (first v)) ....` (we don't know yet what gets returned in the case when the predicate is false). 
+
+Note that the base case happens when there is only one element in the vector, and we check it by cehcking if the rest of the elements is empty. 
+
+The second case is the so-called *recursive step*: it combines the result for the first element with the result of the same computation on the rest of them. This is where we will be calling the function recursively to determine if the predicate holds for all elements in the rest of the vector. Since our function works on any sequence of elements (by design), it will work on the rest of the elements of `v`. 
+
+TO-DO: add a bit more explaination, perhaps? 
+
+Although this seems a bit weird, let's right down what the recursive step looks like, literally putting the second case in code as it is written in English: '(and (f (first v)) (holds-for-all? f (rest v)))`. One thing that may be a bit tricky here is that we need to pass not only the rest of the vector, but also the predicate to the recursive function call. This is simply because our function *does* take two parameters and will give an error when called with just one. 
+
+When we combine the two cases above and add the necessary syntax, we get: 
+
+```clojure
+(defn holds-for-all? [f v]
+  (if (empty? (rest v)) (f (first v))
+    (and (f (first v)) (holds-for-all? f (rest v)))))
+```
+
+TO-DO: walk through an example. 
 
 ## Higher-order functions
 
