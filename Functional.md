@@ -25,15 +25,18 @@ The purpose of these exercises is to alter the `__` to make the assertion pass.
 The koans are done incrementally, as you complete each one it will then move on to the next koan.
 Feel free to go through these at your own pace.
 
-To get the koans all setup and running
-visit: http://clojurekoans.com
+To get the koans all setup and running:
 
-You should have everything you need installed from the Install Fest, so hop down to the
-`Install the Koans` section to get started.
+	git clone git@github.com:clojurebridge-minneapolis/clojure-koans.git
+	cd clojure-koans
+	lein koan run
+
+It should give you a failed message, as you fix each broken assertion and save it should walk to
+the next problem.
 
 # Syntax
 
-Compared to other languages, Clojure does function calls slightly differently than teh majority of common programming languages. To give a quick example:
+Compared to other languages, Clojure does function calls slightly differently than the majority of common programming languages. To give a quick example:
 
 ```java
 myFunction("hi", "bye")
@@ -46,7 +49,9 @@ In Clojure this might look like the following:
 ```
 
 There are a couple differences here, first thing to note is that we are using a different
-case style. In Clojure we don't use camel case but instead lisp case which is dash separated.
+case style. In Clojure we don't use camel case but instead kebab case which is dash separated.
+
+To prove we didn't just make this up: http://c2.com/cgi/wiki?KebabCase
 
 Another thing is that we've placed the function inside the parenthesis. In Clojure a function
 call is always an open paren followed by the function we want to call, followed by any arguments
@@ -186,7 +191,7 @@ use the following:
 ```clojure
 user=> '(1 2 3)
 (1 2 3)
-user=> `()
+user=> '()
 ()
 ```
 
@@ -469,7 +474,7 @@ false
 ```
 ### Exercises
 
-Try to complete the fifth set of Koans `06_functions.clj`.
+Try to complete the sixth set of Koans `06_functions.clj`.
 
 ### Recursion
 
@@ -479,7 +484,7 @@ Here we will look at the approach called *recursion* which breaks the vector int
 
 Developing recursive functions is a bit more involved process than what we have done so far, so let's build it step-by-step. 
 
-When developing a fucntion, it is useful to start by writing down how you expect it to work: 
+When developing a function, it is useful to start by writing down how you expect it to work:
 ```clojure
 user=> (holds-for-all? odd? [1 3 -1])
 true
@@ -496,7 +501,7 @@ Obviously, this doesn't work yet because the function `holds-for-all?` doesn't e
 
 The first case (one element) is called the *base* cases: the function immediately retruns the answer, there is no "rest of the vector" to look at. Let's sketch out this case in code, assuming that 'f' is the predicate and 'v' is the vector: `(if (empty? (rest v)) (f (first v)) ....` (we don't know yet what gets returned in the case when the predicate is false). 
 
-Note that the base case happens when there is only one element in the vector, and we check it by cehcking if the rest of the elements is empty. 
+Note that the base case happens when there is only one element in the vector, and we check it by checking if the rest of the elements is empty.
 
 The second case is the so-called *recursive step*: it combines the result for the first element with the result of the same computation on the rest of them. This is where we will be calling the function recursively to determine if the predicate holds for all elements in the rest of the vector. Since our function works on any sequence of elements (by design), it will work on the rest of the elements of `v`. 
 
