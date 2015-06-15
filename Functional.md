@@ -555,9 +555,7 @@ The third call to the fucntion is now done and returns `false` to the second cal
 
 Walking through a recursive function helps you understand how it works. However, you don't have to do it every time you write a recursive function: typically just breaking down the problem into a base case and a recursive step and constructing the results in both cases is enough. 
 
-TO-DO: notes on short-circuiting `and`, empty vector base case, and the fact that rest of v isn't actually a vector. 
-
-There may be a few details that we have skipped over in order to emphasize the main ideas. Feel free to read about these details now, or come back to them later. 
+There are a few details that we have skipped over in order to emphasize the main ideas. Feel free to read about these details now, or come back to them later. 
 
 1. You may be wondering what happens if the first even element is not in the last position of the vector: will the function go all the way to the end, or start returing earlier? The answer is: it will return earlier because `and` what's called *short-circuiting*: it evaluates left to right, and stops and returns as soon as it knows the answer. Thus `(and false <anything>)` returns `false` immediately. If the first element of a vector is even, the function will return without going into the recursive call since `and` already knows that the answer is `false`. In general, however, you need to be careful since many ways of using the result of a recursive call are not short-circuiting. 
 2. Our base case for the function is a one-element vector (its rest is empty). However, typically such functions are written with the base case being just an empty vector. You may be wondering what should be returned for an empty vector: do all its elements satisfy the condition? For instance, are they all odd? The answer is, yes. If there are no elements in a vector, all its elements satisfy any property whatsoever (they are odd, even, blue, tasty....) since there are no elements that fail the condition. On your own, try to rewrite the function with an empty vector base case. 
