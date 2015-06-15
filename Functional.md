@@ -385,7 +385,7 @@ user=> PI
 ```
 
 # Conditional computation: `if` statement
-It is very common that the result of a computation depends on a condition. The most straightforward conditional statement in Clojue is `if`. It has three parts: the condition, the result when the condition is true, and the result when the condition is false. Using it, we can compute expressions such as the absolute value of a number:
+It is very common that the result of a computation depends on a condition. The most straightforward conditional statement in Clojure is `if`. It has three parts: the condition, the result when the condition is true, and the result when the condition is false. Using it, we can compute expressions such as the absolute value of a number:
 ```clojure
 user=> (def x -5)
 #'user/x
@@ -553,7 +553,16 @@ In the third call we check the condition `(empty? [4])`, and it's now true. This
 
 The third call to the fucntion is now done and returns `false` to the second call that's waiting for it in order to compute its `and`. Its computation now becomes `(and true false)` which evaluates to `false`, the second function call is done, and returns to the first call in the recursive sequence which is still waiting to finish its computation of `and`. Once again, the computation is  `(and true false)` which produces `false`, and that's what gets returned from the entire sequence of calls, which is what we expected since the vector `[1 3 4]` does not have only odd elements.  
 
+Walking through a recursive function helps you understand how it works. However, you don't have to do it every time you write a recursive function: typically just breaking down the problem into a base case and a recursive step and constructing the results in both cases is enough. 
+
 TO-DO: notes on short-circuiting `and`, empty vector base case, and the fact that rest of v isn't actually a vector. 
+
+There may be a few details that we have skipped over in order to emphasize the main ideas. Feel free to read about these details now, or come back to them later. 
+
+1. You may be wondering what happens if the first even element is not in the last position of the vector: will the function go all the way to the end, or start returing earlier? The answer is: it will return earlier because `and` what's called *short-circuiting*: it evaluates left to right, and stops and returns as soon as it knows the answer. Thus `(and false <anything>)` returns `false` immediately. If the first element of a vector is even, the function will return without going into the recursive call since `and` already knows that the answer is `false`. In general, however, you need to be careful since many ways of using the result of a recursive call are not short-circuiting. 
+2. Our base case for the function is a one-element vector (its rest is empty). However, typically such functions are written with the base case being just an empty vector. You may be wondering what should be returned for an empty vector: do all its elements satisfy the condition? For instance, are they all odd? The answer is, yes. If there are no elements in a vector, all its elements satisfy any property whatsoever (they are odd, even, blue, tasty....) since there are no elements that fail the condition. On your own, try to rewrite the function with an empty vector base case. 
+3. We also simplified one important thing: we keep referring to the argument of the function as a vector, but in fact any sequence of elements will be fine (a list will do, for instance). Moreover, taking the rest of a vector gives you a sequence of elements, but not a vector, so after the first call we will be passing a sequence, not a vector to all subsequent ones! This is not important for understanding how recursion works in this case, but will be useful to know for the future. 
+4. Finally, you may be wondering: isn't recursion very inefficient? We have a bunch of `and`s waiting for results of computations, doesn't it take memory and time to manage? The answer is, it may be inefficient if one isn't careful. However, most functional languages use a mechanism known as *tail recursion* (and a few other tricks) to implement recursion efficiently. We are not going into details of this here. 
 
 ## Higher-order functions
 
