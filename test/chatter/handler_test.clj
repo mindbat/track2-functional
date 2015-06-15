@@ -16,6 +16,10 @@
     (let [response (app (mock/request :get "/invalid"))]
       (is (= (:status response) 404)))))
 
+(deftest test-safe-inc
+  (is (= 1 (safe-inc nil)))
+  (is (= 1 (safe-inc 0)))
+  (is (= 2 (safe-inc 1))))
 
 
 (defn simulate-conversation
@@ -87,14 +91,14 @@ Arguments:
          identity
 
          ;;  This should work too
-         new-mutable-concurrent-conversation-db
-         locking-add-message
-         identity
+         ;new-mutable-concurrent-conversation-db
+         ;locking-add-message
+         ;identity
 
          ;;  This should work and should perform noticeably better
-         new-atomic-conversation-db
-         atomic-add-message
-         deref
+         ;new-atomic-conversation-db
+         ;atomic-add-message
+         ;deref
          )))
 
 
