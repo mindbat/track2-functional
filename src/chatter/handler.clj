@@ -15,18 +15,17 @@
   "Using simple, mutable Java collections, construct a new
 Conversation Database that will hold a limited number of messages."
   [message-limit]
-  (doto (HashMap.)
+  (doto (new HashMap)
     (.put :limit    message-limit)
     (.put :total    0)
-    (.put :counts   (HashMap.))
-    (.put :messages (LinkedList.))))
+    (.put :counts   (new HashMap))
+    (.put :messages (new LinkedList))))
 
 
 (defn mutating-add-message
   "Using standard Java collections APIs, add a new message
-to a conversation and perform all necessary accounting.
-"
-  [^Map conversation name new-message]
+to a conversation and perform all necessary accounting."
+  [conversation name new-message]
   (let [limit    (.get conversation :limit)
         total    (.get conversation :total)
         counts   (.get conversation :counts)
@@ -36,7 +35,7 @@ to a conversation and perform all necessary accounting.
       (.put name (inc (.getOrDefault counts name 0))))
 
     (doto messages
-      (.addFirst (doto (HashMap.)
+      (.addFirst (doto (new HashMap)
                    (.put :name name)
                    (.put :message new-message))))
 
@@ -54,19 +53,19 @@ to a conversation and perform all necessary accounting.
 Conversation Database that will hold a limited number
 of messages"
   [message-limit]
-  (doto (ConcurrentHashMap.)
+  (doto (new ConcurrentHashMap)
     (.put :limit    message-limit)
     (.put :total    0)
-    (.put :counts   (ConcurrentHashMap.))
-    (.put :messages (ConcurrentLinkedDeque.))))
+    (.put :counts   (new ConcurrentHashMap))
+    (.put :messages (new ConcurrentLinkedDeque))))
 
 
 (defn locking-add-message
   "Add a message to a conversation after locking
 the conversation"
-  [conv name message]
-  (locking conv
-    (mutating-add-message conv name message)))
+  [conversation name message]
+  (locking conversation
+    (mutating-add-message conversation name message)))
 
 (def safe-inc
   "Increments a number.  Treats nil as 0"
