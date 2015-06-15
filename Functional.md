@@ -455,7 +455,7 @@ true
 ```
 
 ### Anonymous functions
-In functional languages fucntions are first class citizens, just like numbers, so you can put them together at any point, they don't need to be defined ahead of time. 
+In functional languages functions are first class citizens, just like numbers, so you can put them together at any point, they don't need to be defined ahead of time. 
 
 In this example we put together a function right in the call to `condition-holds?` using the `fn` syntax that we have introduced earlier, and it doesn't even need a name: it's an *anonymous function*. In this case we are checking if the elements of a vector are less than 10:
 ```clojure
@@ -505,9 +505,7 @@ Note that the base case happens when there is only one element in the vector, an
 
 The second case is the so-called *recursive step*: it combines the result for the first element with the result of the same computation on the rest of them. This is where we will be calling the function recursively to determine if the predicate holds for all elements in the rest of the vector. Since our function works on any sequence of elements (by design), it will work on the rest of the elements of `v`. 
 
-TO-DO: add a bit more explaination, perhaps? 
-
-Although this seems a bit weird, let's right down what the recursive step looks like, literally putting the second case in code as it is written in English: '(and (f (first v)) (holds-for-all? f (rest v)))`. One thing that may be a bit tricky here is that we need to pass not only the rest of the vector, but also the predicate to the recursive function call. This is simply because our function *does* take two parameters and will give an error when called with just one. 
+Although this seems a bit weird, let's write down what the recursive step looks like, almost literally translating the second case from English to code: '(and (f (first v)) (holds-for-all? f (rest v)))`. One thing that may be a bit tricky here is that we need to pass not only the rest of the vector, but also the predicate to the recursive function call. This is simply because our function *does* take two parameters and will give an error when called with just one. 
 
 When we combine the two cases above and add the necessary syntax, we get: 
 
@@ -516,8 +514,36 @@ When we combine the two cases above and add the necessary syntax, we get:
   (if (empty? (rest v)) (f (first v))
     (and (f (first v)) (holds-for-all? f (rest v)))))
 ```
+Now let's write out step-by-step what happens when this function is called. Suppose our predicate is `odd?` and the vector is `[1 3 4]`: 
+```clojure
+(holds-for-all? odd? [1 3 4])
+```
+The condition `(empty? (rest [1 3 4])` returns false, so the function will go to the recursive step, not the base case. It will be evaluating the expression
+```clojure
+(and (odd? (first [1 3 4])) (holds-for-all? odd? (rest [1 3 4])))
+```
+Note that the `and` cannot be evaluated until the recursive call returns, so it will be sitting in computer memory waiting for the result of the second call to `holds-for-all?`. 
 
-TO-DO: walk through an example. 
+Now let's see what happens in the second call. 
+Since the first element of the vector is odd, the expression `(odd? (first [1 3 4]))` returns true. In order to determine the result of the `and`, we need to compute the result of the second part, which is
+```clojure
+(holds-for-all? odd? [3 4])
+```
+Once again, the rest of the vector is not empty, the function goes into the recursive step:
+```clojure
+(and (odd? (first [3 4])) (holds-for-all? odd? (rest [3 4])))
+```
+The first part of `and` is `(odd? (first [3 4]))` and returns true. The second part requires another recursive call:
+```clojure
+(holds-for-all? odd? [4])
+```
+Now we have a second call waiting for the result of the third call in order to find out what its `and` returns. 
+
+In the third call we check the condition `(empty? [4])`, and it's now true. This means that, according to the `if` statement, we just return the result of `(odd? (first [4])`. This result is `false`. 
+
+The third call to the fucntion is now done and returns `false` to the second call that's waiting for it in order to compute its `and`. Its computation now becomes `(and true false)` which evaluates to `false`, the second function call is done, and returns to the first call in the recursive sequence which is still waiting to finish its computation of `and`. Once again, the computation is  `(and true false)` which produces `false`, and that's what gets returned from the entire sequence of calls, which is what we expected since the vector `[1 3 4]` does not have only odd elements.  
+
+TO-DO: notes on short-circuiting `and`, empty vector base case, and the fact that rest of v isn't actually a vector. 
 
 ## Higher-order functions
 
