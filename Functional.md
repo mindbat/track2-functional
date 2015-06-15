@@ -496,6 +496,7 @@ user=> (holds-for-all? #(<= % 5) [5])
 true
 ```
 Obviously, this doesn't work yet because the function `holds-for-all?` doesn't exist yet. But these cases help us understand how the function works:
+
 1. If there is only one element, it returns the result of the predicate on that one element (see the last two cases). 
 2. If there is more than one element then it returns true only if the predicate is true on the first element and on the rest of them. 
 
@@ -514,15 +515,22 @@ When we combine the two cases above and add the necessary syntax, we get:
   (if (empty? (rest v)) (f (first v))
     (and (f (first v)) (holds-for-all? f (rest v)))))
 ```
-Now let's write out step-by-step what happens when this function is called. Suppose our predicate is `odd?` and the vector is `[1 3 4]`: 
+Now let's write out step-by-step what happens when this function is called. 
+Suppose our predicate is `odd?` and the vector is `[1 3 4]`: 
 ```clojure
 (holds-for-all? odd? [1 3 4])
 ```
+We will go through each recursive call, one at a time:
+
+##### First call `(holds-for-all? odd? [1 3 4])`
+
 The condition `(empty? (rest [1 3 4])` returns false, so the function will go to the recursive step, not the base case. It will be evaluating the expression
 ```clojure
 (and (odd? (first [1 3 4])) (holds-for-all? odd? (rest [1 3 4])))
 ```
 Note that the `and` cannot be evaluated until the recursive call returns, so it will be sitting in computer memory waiting for the result of the second call to `holds-for-all?`. 
+
+##### Second call `(holds-for-all? odd? [3 4])`
 
 Now let's see what happens in the second call. 
 Since the first element of the vector is odd, the expression `(odd? (first [1 3 4]))` returns true. In order to determine the result of the `and`, we need to compute the result of the second part, which is
@@ -538,6 +546,8 @@ The first part of `and` is `(odd? (first [3 4]))` and returns true. The second p
 (holds-for-all? odd? [4])
 ```
 Now we have a second call waiting for the result of the third call in order to find out what its `and` returns. 
+
+##### Third call `(holds-for-all? odd? [4])` and recursive returns
 
 In the third call we check the condition `(empty? [4])`, and it's now true. This means that, according to the `if` statement, we just return the result of `(odd? (first [4])`. This result is `false`. 
 
