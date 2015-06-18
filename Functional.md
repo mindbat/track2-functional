@@ -625,6 +625,21 @@ A quick example is we can reduce `+` over a sequence of numbers to add them all 
 user=> (reduce + [1 2 3 4])
 10
 ```
-TO-DO: add an exercise involving higher-order functions
 
-TO-DO: add resources for independent work 
+## Exercise on higher-order functions
+
+Write a function that computes the number of palindrome numbers in a given range. A number is a palindrome if its digits form the same number if reversed. For instance, `21512` is a palindrome. The function that you are writing should take two non-negative integer numbers `n` and `m` (such that `n <= m`) and return the number of palindromes in the range from `n` to `m` (including `n`, not including `m`). For instance, given 5 and 15, it should return 6 since there are 6 palindromes in this range: 5, 6, 7, 8, 9, 11. 
+
+Use higher-order functions (`map, filter, reduce`). 
+
+Some helpful functions: 
+
+`str` converts numbers into strings. See [its documentation](https://clojuredocs.org/clojure.core/str) for more details. 
+
+`range` produces a sequence of all integers in a given range. Once again, consult [its documentation](https://clojuredocs.org/clojure.core/range) for details. 
+
+Note that your function just need to return the number of palindromes, not palindromes themselves. 
+
+# Further resources
+
+TO-DO: finish koans, 4clojure, clojuredocs (including quickref and cheat sheet), books: Clojure for the Brave and True - what else? 
