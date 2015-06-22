@@ -9,7 +9,7 @@
                    [hiccup "1.0.5"]
                    [clj-http "1.1.2"]
                    [enlive "1.1.5"]]
-  :plugins [[lein-ring "0.8.13"]]
+  :plugins [[lein-ring "0.8.13" :exclusions [org.clojure/clojure]]]
   :ring {:handler chatter.handler/app}
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
