@@ -165,7 +165,7 @@ Conversation data wrapped in an Atom"
                         val (:counts conversation))))]]]]])))
 
 (defonce CONVERSATION-DB
-  (new-mutable-concurrent-conversation-db 20))
+  (new-mutable-conversation-db 20))
 
 (defroutes app-routes
   (GET "/" [] (generate-message-view CONVERSATION-DB))
@@ -184,7 +184,7 @@ Conversation data wrapped in an Atom"
   "Ensure concurrent requests don't compete with each"
   [handler]
   (fn [request]
-    (locking handler
+    (locking CONVERSATION-DB
       (handler request))))
 
 
