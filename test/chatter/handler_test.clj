@@ -172,28 +172,22 @@ Returns the HTML response converted back into conversation data."
   [url name message]
   (let [expected-message {:name name :message message}
         conv (post-message url name message)]
-    (boolean
-      (and (is (some (partial = expected-message)
-                     (:messages conv))
-               "Must see my own new message")
+    (and (is (some (partial = expected-message)
+                   (:messages conv))
+             "Must see my own new message")
 
-           (is (= (:total conv)
-                  (reduce + (vals (:counts conv))))
-               "Total must equal the sum of the user counts"))
-      )))
+         (is (= (:total conv)
+                (reduce + (vals (:counts conv))))
+             "Total must equal the sum of the user counts"))
+    ))
 
 
 (defn chat-bot [url message-count names messages]
-  (let [rand-names (map str (cycle names)
-                            (repeatedly #(rand-int 4)))
-        rand-messages (map str (cycle messages)
-                               (repeatedly #(rand-int 1000)))]
-    (doall
-      (pmap (partial post-message url)
-            (take message-count rand-names)
-            (take message-count rand-messages)))
-    (read-messages url)
-    ))
+  (doall
+    (pmap (partial post-message-and-check url)
+          (take message-count (cycle names))
+          (take message-count (cycle messages))))
+  (read-messages url))
 
 #_(chat-bot "http://localhost:8000/"
            50
