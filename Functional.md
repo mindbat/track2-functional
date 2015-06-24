@@ -385,7 +385,7 @@ user=> PI
 ```
 
 # Conditional computation: `if` statement
-It is very common that the result of a computation depends on a condition. The most straightforward conditional statement in Clojue is `if`. It has three parts: the condition, the result when the condition is true, and the result when the condition is false. Using it, we can compute expressions such as the absolute value of a number:
+It is very common that the result of a computation depends on a condition. The most straightforward conditional statement in Clojure is `if`. It has three parts: the condition, the result when the condition is true, and the result when the condition is false. Using it, we can compute expressions such as the absolute value of a number:
 ```clojure
 user=> (def x -5)
 #'user/x
@@ -455,7 +455,7 @@ true
 ```
 
 ### Anonymous functions
-In functional languages fucntions are first class citizens, just like numbers, so you can put them together at any point, they don't need to be defined ahead of time. 
+In functional languages functions are first class citizens, just like numbers, so you can put them together at any point, they don't need to be defined ahead of time. 
 
 In this example we put together a function right in the call to `condition-holds?` using the `fn` syntax that we have introduced earlier, and it doesn't even need a name: it's an *anonymous function*. In this case we are checking if the elements of a vector are less than 10:
 ```clojure
@@ -496,6 +496,7 @@ user=> (holds-for-all? #(<= % 5) [5])
 true
 ```
 Obviously, this doesn't work yet because the function `holds-for-all?` doesn't exist yet. But these cases help us understand how the function works:
+
 1. If there is only one element, it returns the result of the predicate on that one element (see the last two cases). 
 2. If there is more than one element then it returns true only if the predicate is true on the first element and on the rest of them. 
 
@@ -505,9 +506,7 @@ Note that the base case happens when there is only one element in the vector, an
 
 The second case is the so-called *recursive step*: it combines the result for the first element with the result of the same computation on the rest of them. This is where we will be calling the function recursively to determine if the predicate holds for all elements in the rest of the vector. Since our function works on any sequence of elements (by design), it will work on the rest of the elements of `v`. 
 
-TO-DO: add a bit more explaination, perhaps? 
-
-Although this seems a bit weird, let's right down what the recursive step looks like, literally putting the second case in code as it is written in English: '(and (f (first v)) (holds-for-all? f (rest v)))`. One thing that may be a bit tricky here is that we need to pass not only the rest of the vector, but also the predicate to the recursive function call. This is simply because our function *does* take two parameters and will give an error when called with just one. 
+Although this seems a bit weird, let's write down what the recursive step looks like, almost literally translating the second case from English to code: '(and (f (first v)) (holds-for-all? f (rest v)))`. One thing that may be a bit tricky here is that we need to pass not only the rest of the vector, but also the predicate to the recursive function call. This is simply because our function *does* take two parameters and will give an error when called with just one. 
 
 When we combine the two cases above and add the necessary syntax, we get: 
 
@@ -516,8 +515,52 @@ When we combine the two cases above and add the necessary syntax, we get:
   (if (empty? (rest v)) (f (first v))
     (and (f (first v)) (holds-for-all? f (rest v)))))
 ```
+Now let's write out step-by-step what happens when this function is called. 
+Suppose our predicate is `odd?` and the vector is `[1 3 4]`: 
+```clojure
+(holds-for-all? odd? [1 3 4])
+```
+We will go through each recursive call, one at a time:
 
-TO-DO: walk through an example. 
+##### First call `(holds-for-all? odd? [1 3 4])`
+
+The condition `(empty? (rest [1 3 4])` returns false, so the function will go to the recursive step, not the base case. It will be evaluating the expression
+```clojure
+(and (odd? (first [1 3 4])) (holds-for-all? odd? (rest [1 3 4])))
+```
+Note that the `and` cannot be evaluated until the recursive call returns, so it will be sitting in computer memory waiting for the result of the second call to `holds-for-all?`. 
+
+##### Second call `(holds-for-all? odd? [3 4])`
+
+Now let's see what happens in the second call. 
+Since the first element of the vector is odd, the expression `(odd? (first [1 3 4]))` returns true. In order to determine the result of the `and`, we need to compute the result of the second part, which is
+```clojure
+(holds-for-all? odd? [3 4])
+```
+Once again, the rest of the vector is not empty, the function goes into the recursive step:
+```clojure
+(and (odd? (first [3 4])) (holds-for-all? odd? (rest [3 4])))
+```
+The first part of `and` is `(odd? (first [3 4]))` and returns true. The second part requires another recursive call:
+```clojure
+(holds-for-all? odd? [4])
+```
+Now we have a second call waiting for the result of the third call in order to find out what its `and` returns. 
+
+##### Third call `(holds-for-all? odd? [4])` and recursive returns
+
+In the third call we check the condition `(empty? [4])`, and it's now true. This means that, according to the `if` statement, we just return the result of `(odd? (first [4])`. This result is `false`. 
+
+The third call to the fucntion is now done and returns `false` to the second call that's waiting for it in order to compute its `and`. Its computation now becomes `(and true false)` which evaluates to `false`, the second function call is done, and returns to the first call in the recursive sequence which is still waiting to finish its computation of `and`. Once again, the computation is  `(and true false)` which produces `false`, and that's what gets returned from the entire sequence of calls, which is what we expected since the vector `[1 3 4]` does not have only odd elements.  
+
+Walking through a recursive function helps you understand how it works. However, you don't have to do it every time you write a recursive function: typically just breaking down the problem into a base case and a recursive step and constructing the results in both cases is enough. 
+
+There are a few details that we have skipped over in order to emphasize the main ideas. Feel free to read about these details now, or come back to them later. 
+
+1. You may be wondering what happens if the first even element is not in the last position of the vector: will the function go all the way to the end, or start returing earlier? The answer is: it will return earlier because `and` what's called *short-circuiting*: it evaluates left to right, and stops and returns as soon as it knows the answer. Thus `(and false <anything>)` returns `false` immediately. If the first element of a vector is even, the function will return without going into the recursive call since `and` already knows that the answer is `false`. In general, however, you need to be careful since many ways of using the result of a recursive call are not short-circuiting. 
+2. Our base case for the function is a one-element vector (its rest is empty). However, typically such functions are written with the base case being just an empty vector. You may be wondering what should be returned for an empty vector: do all its elements satisfy the condition? For instance, are they all odd? The answer is, yes. If there are no elements in a vector, all its elements satisfy any property whatsoever (they are odd, even, blue, tasty....) since there are no elements that fail the condition. On your own, try to rewrite the function with an empty vector base case. 
+3. We also simplified one important thing: we keep referring to the argument of the function as a vector, but in fact any sequence of elements will be fine (a list will do, for instance). Moreover, taking the rest of a vector gives you a sequence of elements, but not a vector, so after the first call we will be passing a sequence, not a vector to all subsequent ones! This is not important for understanding how recursion works in this case, but will be useful to know for the future. 
+4. Finally, you may be wondering: isn't recursion very inefficient? We have a bunch of `and`s waiting for results of computations, doesn't it take memory and time to manage? The answer is, it may be inefficient if one isn't careful. However, most functional languages use a mechanism known as *tail recursion* (and a few other tricks) to implement recursion efficiently. We are not going into details of this here. 
 
 ## Higher-order functions
 
@@ -583,4 +626,25 @@ user=> (reduce + [1 2 3 4])
 10
 ```
 
+## Exercise on higher-order functions
+
+Write a function that computes the number of palindrome numbers in a given range. A number is a palindrome if its digits form the same number if reversed. For instance, `21512` is a palindrome. The function that you are writing should take two non-negative integer numbers `n` and `m` (such that `n <= m`) and return the number of palindromes in the range from `n` to `m` (including `n`, not including `m`). For instance, given 5 and 15, it should return 6 since there are 6 palindromes in this range: 5, 6, 7, 8, 9, 11. 
+
+Use higher-order functions (`map, filter, reduce`). 
+
+Some helpful functions: 
+
+`str` converts numbers into strings. See [its documentation](https://clojuredocs.org/clojure.core/str) for more details. 
+
+`range` produces a sequence of all integers in a given range. Once again, consult [its documentation](https://clojuredocs.org/clojure.core/range) for details. 
+
+Note that your function just need to return the number of palindromes, not palindromes themselves. 
+
+# Further resources
+
+- You are welcome to continue the koans. You might want to look into other resources (see below) for more advanced ones. There is also a series of youtube videos helping out with the koans: [https://www.youtube.com/playlist?list=PL1p6TgkbKXqyOwq6iSkce_EY5YWFHciHt](https://www.youtube.com/playlist?list=PL1p6TgkbKXqyOwq6iSkce_EY5YWFHciHt)
+- Another excellent online source of Clojure problems of different levels is [https://www.4clojure.com/](https://www.4clojure.com/)
+- As you are working on the problems, you can look up common Clojure functions with examples and discussion at community maintained Clojure documentation: [https://clojuredocs.org/quickref](https://clojuredocs.org/quickref). 
+- Clojure cheat sheet at clojure.org also gives you a brief well-organzied list of most common functions with links to documentation: [http://clojure.org/cheatsheet](http://clojure.org/cheatsheet)
+- Boston Clojure meetup has put together a nice list of resources, beginners and more advanced: [https://bostonclojuregroup.hackpad.com/Learning-Clojure-B3gXhvDJmi6](https://bostonclojuregroup.hackpad.com/Learning-Clojure-B3gXhvDJmi6). In particular, it has a very helpful list of most recent Clojure books for beginners: [https://bostonclojuregroup.hackpad.com/Learning-Clojure-B3gXhvDJmi6#:h=Books](https://bostonclojuregroup.hackpad.com/Learning-Clojure-B3gXhvDJmi6#:h=Books).  
 
