@@ -1,8 +1,6 @@
-# track2-function
+# track2-functional
 
-Documentation on the ClojureBridgeMN Track 2
-
-_TBD_
+Please see the introduction to [Functional Programming](Functional.md)
 
 ## Copyright and License
 
