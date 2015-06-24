@@ -642,4 +642,9 @@ Note that your function just need to return the number of palindromes, not palin
 
 # Further resources
 
-TO-DO: finish koans, 4clojure, clojuredocs (including quickref and cheat sheet), books: Clojure for the Brave and True - what else? 
+- You are welcome to continue the koans. You might want to look into other resources (see below) for more advanced ones. There is also a series of youtube videos helping out with the koans: [https://www.youtube.com/playlist?list=PL1p6TgkbKXqyOwq6iSkce_EY5YWFHciHt](https://www.youtube.com/playlist?list=PL1p6TgkbKXqyOwq6iSkce_EY5YWFHciHt)
+- Another excellent online source of Clojure problems of different levels is [https://www.4clojure.com/](https://www.4clojure.com/)
+- As you are working on the problems, you can look up common Clojure functions with examples and discussion at community maintained Clojure documentation: [https://clojuredocs.org/quickref](https://clojuredocs.org/quickref). 
+- Clojure cheat sheet at clojure.org also gives you a very brief well-organzied list of most common functions with links to documentation: [http://clojure.org/cheatsheet](http://clojure.org/cheatsheet)
+- Boston Clojure meetup has put together a nice list of resources, beginners and more advanced: [https://bostonclojuregroup.hackpad.com/Learning-Clojure-B3gXhvDJmi6](https://bostonclojuregroup.hackpad.com/Learning-Clojure-B3gXhvDJmi6). In particular, it has a very helpful list of most recent Clojure books for beginners: [https://bostonclojuregroup.hackpad.com/Learning-Clojure-B3gXhvDJmi6#:h=Books](https://bostonclojuregroup.hackpad.com/Learning-Clojure-B3gXhvDJmi6#:h=Books).  
+
