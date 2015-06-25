@@ -101,7 +101,7 @@ The example above is written in an imperative style, as a series of commands.
 1. Construct a new `HashMap` and give it then name `conversation`.
 1. `put` four new entries into the `HashMap`, defining a fresh conversation.
 1. Return the configured `conversation`.
-If `converation` wan't present, and the function ended with one of the calls
+If `conversation` wasn't present, and the function ended with one of the calls
 to `(.put conversation ...)` instead, then the function would try to return
 the result from that `(.put ...)` call, which would be nothing, `nil`, since
 a `put` on a `Map` is a `void` method in Java.
@@ -177,12 +177,14 @@ functions.
 
 ```
 => (new-mutable-conversation-db 20)
+
 {:counts {}, :limit 20, :total 0, :messages ()}
 
 => (mutating-add-message
      (new-mutable-conversation-db 20)
      "Alice"
      "Friends, Romans, countryman")
+
 {:counts {"Alice" 1}, :limit 20, :total 1,
  :messages ({:name "Alice", :message "Friends, Romans, countryman"})}
 ```
@@ -197,14 +199,16 @@ can use some of the tests.
 
 ```
 => (load "/chatter/handler_test")
+
 nil
 
 => (in-ns 'chatter.handler-test)
+
 #<Namespace chatter.handler-test>
 ```
 
 In the `chatter.handler-test` namespace you can find a `simulate-conversation`
-function that provides an example of we can write a test that excercises
+function that provides an example of we can write a test that exercises
 our code in parallel.
 
 ```
@@ -248,6 +252,7 @@ an infinite list can crash the REPL.
 
 ```
 => (take 10 (cycle ["Alice" "Bob" "Cindy" "Doug"]))
+
 ("Alice" "Bob" "Cindy" "Doug" "Alice" "Bob" "Cindy" "Doug" "Alice" "Bob")
 ```
 
@@ -281,7 +286,7 @@ aren't "thread safe", they can't be modified by two threads at the same time.
 
 ### Re-implementing the algorithm
 Java, and many other languages, provide concurrent, thread-safe versions
-of common collections types.  So let's whip up an alternate implmentation of
+of common collections types.  So let's whip up an alternate implementation of
 `new-mutable-conversation-db`.  This version will be called
 `new-mutable-concurrent-conversation-db` and will use alternate, thread-safe
 collections.
@@ -305,12 +310,14 @@ update it correctly.
 
 ```
 => (new-mutable-concurrent-conversation-db 20)
+
 {:counts {}, :limit 20, :total 0, :messages #<ConcurrentLinkedDeque []}
 
 => (mutating-add-message
      (new-mutable-concurrent-conversation-db 20)
      "Alice"
      "Friends, Romans, countryman")
+
 {:counts {"Alice" 1}, :limit 20, :total 1,
  :messages #<ConcurrentLinkedDeque [{:name=Alice, :message=Friends, Romans, countryman}]>}
 ```
@@ -349,9 +356,9 @@ state of the thing you wish to change must be observed.  Second, a new state,
 or value, will be calculated based on the observed state.  Last, the data
 will be updated with the new value or state.  If two or more tasks are
 actively observing, calculating, and updating even a single address in memory,
-changes made by one task are invalidating the observerations and calculations
+changes made by one task are invalidating the observations and calculations
 made by the other tasks, but the other tasks continue on anyway oblivious to
-these changes.  This leads to lost changes, or changes that are inconsistant
+these changes.  This leads to lost changes, or changes that are inconsistent
 with other changes.
 
 For example, let's imagine a program that was written where two threads
@@ -359,7 +366,7 @@ attempt to increment the same number in memory.  If one thread reads the
 value, increments it, and writes it back to memory all before the other
 thread performs the same steps, then we will see that the original value
 was incremented twice.  On the other hand, if both threads read the value
-before the other has made the change, then both threads will independtly
+before the other has made the change, then both threads will independently
 increment the same value, and calculate the same result.  Each thread will
 then write it's result back to memory, and outcome will be that the original
 value will have only been incremented once.
@@ -374,7 +381,7 @@ a variable at a time.  The first thread to acquire the lock will continue
 with it's work.  Any other threads that attempt to acquire the lock while
 it's being held will pause until the lock has been released.
 
-### The implmenetation
+### The implementation
 Since locking is something that is performed to coordinate changes to a
 variable, we will write a new function for adding messages to the
 conversation database.  
@@ -569,7 +576,7 @@ fewer arguments.
 
 ### The analysis
 Writing programs that can accurately and consistently manage changes to
-mutable data structures acros multiple active threads is very difficult.
+mutable data structures across multiple active threads is very difficult.
 Often the shortcomings in the code won't be caught through basic correctness
 testing, but are found in the wild, on active production systems, where the
 impact may range from merely obnoxious to very disruptive and damaging.
@@ -589,7 +596,7 @@ users at once has been substantially diminished.
 
 ## The immutable approach
 ### What is immutable data?
-Fortunately, Clojure provides a simpler lternative to the lock-and-mutate
+Fortunately, Clojure provides a simpler alternative to the lock-and-mutate
 approach.  Clojure's standard collections types are very different from the
 collections typically found in imperative languages.  Most importantly,
 they are immutable.  Immutable collections cannot be modified after they
@@ -643,7 +650,7 @@ in `new-mutable-conversation-db` and `mutating-add-message`.
 
 First, the `safe-inc` function is composed with `fnil` and `inc`.  This
 provides a variation of `inc` that will replace `nil` arguments with `0`.
-So `(safe-inc nil)` returns `1` instead of througing a NullPointerException.
+So `(safe-inc nil)` returns `1` instead of throwing a NullPointerException.
 
 Second, the `new-immutable-conversation-db` constructs an empty conversation
 database.  Because all of the functions that will be used to "add" a message
@@ -655,7 +662,7 @@ Last, is the `immutable-add-message` function.  Just like the
 arguments: a conversation database, a name, and a new message.  Unlike
 the `mutating-add-message` function, this function will leave the original
 conversation database unchanged and return an entirely new conversation
-database that reflects what the new stat of the converation is after the
+database that reflects what the new state of the conversation is after the
 new information has been added.
 1. A shorthand syntax called _destructuring_ is used to get important
 fields from the original conversation.  This removes several redundant
@@ -676,14 +683,14 @@ If `messages` is `nil`, `cons` will return a new list.  Then `take` is
 used to trim the `messages` list down to `limit` entries.
 
 Compared to the `mutating-add-message` function, this function is much more
-succinct, and hopefully, the intentended result is more evident.
+succinct, and hopefully, the intended result is more evident.
 
 ### How can we change it?
 Immutable values that can be shared, retained, and reused are great, but
 this chat application really does need to add and update it's data, and
 preserve the changes.
 
-To safely manage chaging values, Clojure provides Atoms.  One way of picturing
+To safely manage changing values, Clojure provides Atoms.  One way of picturing
 an atom is as a box that can hold one, and only one, thing.  The value held
 in this box can be replaced with a new value through a very specific set of
 steps.
@@ -701,7 +708,7 @@ consistent for that point in time.
 
 To work with atoms we will use two functions `deref` and `swap!`.  The
 `deref` function will return the current contents of an atom, and `swap!`
-will be used to change the contents of the atom with a functiona.
+will be used to change the contents of the atom with a function.
 
 So, let's look at an example and see how this might work.
 ```
@@ -726,9 +733,8 @@ visualizing how `swap!` will apply a function and extra arguments to the
 contents of an atom. 
 
 ```
-(swap! conversation-atom immutable-add-message name new-message)
-  =>
-(immutable-add-message (deref conversation-atom) name new-message)
+(=  (swap! conversation-atom immutable-add-message name new-message)
+    (immutable-add-message (deref conversation-atom) name new-message) )
 ```
 
 Now to prove that atoms plus immutable values is both consistent and thread
