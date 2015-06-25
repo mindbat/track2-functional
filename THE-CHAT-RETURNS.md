@@ -1,7 +1,7 @@
 # Track2:  The Chat Returns
 ## Goals
 * To demonstrate some of Clojure's tools for managing concurrency.
-* To illustrate functional composition with the use of Ring middleware.
+* To illustrate higher order functions and functional composition.
 
 ## Our story so far...
 The track1 curricula presents a guide for building a simple web-based
@@ -37,6 +37,7 @@ evaluated to produce a result.
 
 ## The approach
 ### The Conversation Database
+
 1. The chat conversation will be stored in a `Map`, also known as an
 `associative array`, `dictionary`, or `hash`.
 1. This `Map` will contain four (4) entries:
@@ -68,6 +69,7 @@ look like this:
 
 ### The Algorithm
 When a new message is received:
+
 1. Create a new message record using the `name` and `message` provided by
 the user.
 1. Add this new message record to the front of the chat history.
@@ -96,10 +98,13 @@ create and interact with these Java classes.
     conversation
     ))
 ```
+
 The example above is written in an imperative style, as a series of commands.
+
 1. Construct a new `HashMap` and give it then name `conversation`.
 1. `put` four new entries into the `HashMap`, defining a fresh conversation.
 1. Return the configured `conversation`.
+
 If `conversation` wasn't present, and the function ended with one of the calls
 to `(.put conversation ...)` instead, then the function would try to return
 the result from that `(.put ...)` call, which would be nothing, `nil`, since
@@ -374,7 +379,7 @@ value will have only been incremented once.
 
 ### Black & White Demo
 
-## Attempt #2: Coordination with locking
+## Attempt #2: Coordination with Locking
 ### The theory
 One way of coordinating changes across threads is through _locking_.  With
 locking we can create a barrier that will only allow one thread access to
@@ -451,6 +456,7 @@ to the server, the same way your web browser would, then reads the HTML
 response, and reconstructs the state the conversation database was in
 at the time the page was generated.  With this reconstructed view of the
 conversation database, the test can verify a couple of requirements:
+
 1. The total number of messages equals the sum of the per-user message counts.
 1. The conversation contains the message sent by the test.
 
@@ -595,7 +601,7 @@ has become serialized, single-threaded, and the ability to serve many
 users at once has been substantially diminished.
 
 
-## Attempt #3: The immutable approach
+## Attempt #3: The Immutable Approach
 ### What is immutable data?
 Fortunately, Clojure provides a simpler alternative to the lock-and-mutate
 approach.  Clojure's standard collections types are very different from the
@@ -665,6 +671,7 @@ the `mutating-add-message` function, this function will leave the original
 conversation database unchanged and return an entirely new conversation
 database that reflects what the new state of the conversation is after the
 new information has been added.
+
 1. A shorthand syntax called _destructuring_ is used to get important
 fields from the original conversation.  This removes several redundant
 lines of code.
@@ -695,6 +702,7 @@ To safely manage changing values, Clojure provides Atoms.  One way of picturing
 an atom is as a box that can hold one, and only one, thing.  The value held
 in this box can be replaced with a new value through a very specific set of
 steps.
+
 1. The value held be the atom is retrieved.
 1. A function is applied to this value, returning a new value.
 1. The new value will replace the current value if, and only if, the current
@@ -807,12 +815,34 @@ the atomic implementations will be substantially faster.
 
 It turns out that "locking" a value is not cheap, and every time a program
 locks a value that no other thread attempts to access, referred to as an
-uncontested lock, the effort of creating the lock is wasted.  With the
+_uncontested lock_, the effort of creating the lock is wasted.  With the
 atomic approach, no locking is required to safely read a value, and the
 computational work of calculating a new value and throwing it away is
 usually less than the cost of maintaining locks.  Additionally, the
 amount of development time needed to ensure the correct implementation
 of a concurrent algorithm is dramatically when using atoms.
+
+Let's wrap up by updating the chat application to use these functions.
+
+```
+(def CONVERSATION-DB
+  (new-atomic-conversation-db 20))
+
+(defroutes app-routes
+  (GET "/" [] (generate-message-view @CONVERSATION-DB))
+  (POST "/" {params :params}
+    (let [name-param (get params "name")
+          msg-param (get params "msg")
+          new-messages (atomic-add-message CONVERSATION-DB
+                                           name-param msg-param)]
+      (generate-message-view new-messages name-param)
+      ))
+  (route/resources "/")
+  (route/not-found "Not Found"))
+
+(def app
+  (wrap-params app-routes))
+```
 
 ## In conclusion
 ...
