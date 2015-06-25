@@ -251,7 +251,7 @@ function will return an infinite list that cycles through the list of provided
 values.  From this infinite list the simulator will `take` a finite number
 of values.  This is made possible by _Lazy Evaluation_.  By using a lazily
 generated list the program will likely never have a full copy of the list in
-memory at any time.  The contents of the will be generated as it is read.
+memory at any time.  The contents of the list will be generated as it is read.
 As new values are read from the beginning of the list they will be discarded,
 leaving the remainder of the list, which is just the continuation of the lazy
 list, will retained.
