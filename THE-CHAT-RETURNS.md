@@ -34,7 +34,6 @@ and a series of "solutions" that provide varying degrees "correctness".
 * Imperative:  A command, sometimes a request.
 * Expression:  A symbol or combination of symbols which can be
 evaluated to produce a result.
-* 
 
 ## The approach
 ### The Conversation Database
@@ -71,11 +70,11 @@ look like this:
 When a new message is received:
 1. Create a new message record using the `name` and `message` provided by
 the user.
-2. Add this new message record to the front of the chat history.
-3. If the conversation contains more messages than what the `limit` specifies,
+1. Add this new message record to the front of the chat history.
+1. If the conversation contains more messages than what the `limit` specifies,
 then remove the excess entries from the tail of the list.
-4. Increment the `total` counter for the conversation.
-5. Find the message count for the user, and increment that too.
+1. Increment the `total` counter for the conversation.
+1. Find the message count for the user, and increment that too.
 
 ## Attempt #1: Basic Mutable Data
 ### Constructing the database
@@ -159,6 +158,7 @@ the code has an imperative flow to it.
 ```
 
 To restate this in English:
+
 1. Get the `:limit`, `:total`, `:counts`, and `:messages` fields
 from the received conversation.
 1. Update the `counts` by incrementing the count for the provided `name`.
@@ -166,10 +166,11 @@ from the received conversation.
 1. Remove any excess `messages` using a loop
 1. Update the `total` number of messages for the conversation.
 1. Return the conversation.
+
 Each of the steps mutates, or changes, the conversation data in-place.
 This is likely a familiar pattern, but as we shall discover not only is
 the code more verbose than equivalent expression based, functional code,
-making it safe for multi-threaded use can be challenge.
+making it safe for multithreaded use can be challenge.
 
 Now that we have these two functions `new-mutable-conversation-db` and
 `mutating-add-message` we can now run some simple experiments using these
@@ -373,7 +374,7 @@ value will have only been incremented once.
 
 ### Black & White Demo
 
-## Coordination with locking
+## Attempt #2: Coordination with locking
 ### The theory
 One way of coordinating changes across threads is through _locking_.  With
 locking we can create a barrier that will only allow one thread access to
@@ -594,7 +595,7 @@ has become serialized, single-threaded, and the ability to serve many
 users at once has been substantially diminished.
 
 
-## The immutable approach
+## Attempt #3: The immutable approach
 ### What is immutable data?
 Fortunately, Clojure provides a simpler alternative to the lock-and-mutate
 approach.  Clojure's standard collections types are very different from the
@@ -698,8 +699,8 @@ steps.
 1. A function is applied to this value, returning a new value.
 1. The new value will replace the current value if, and only if, the current
 value has not already been replaced by another task.
-1. *If the current value of the box, doesn't match the original value, then
-the process is repeated from the beginning.*
+1. **If the current value of the box, doesn't match the original value, then
+the process is repeated from the beginning.**
 Through these steps, the logic needed to change a value is encapsulated in
 a function.  Intermediate values, like those that would exist in a mutating
 process, are never saved in the atom.  The atom can be asked for it's current
