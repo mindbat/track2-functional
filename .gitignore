@@ -1,14 +1,26 @@
 # .gitignore
 
+# Java build artifacts
+/lib
+/pom.xml*
+*.jar
+*.class
+
+# Clojure build artifacts
+/classes
+/target
+/checkouts
+/bin
+/.lein*
+
 # Editor artifacts
 .classpath
 .project
 .nrepl-port
+.nrepl*
 *~
 
 ## Other
 # silly Mac filesystem
 *.DS_Store*
 *._*
-/bin/
-/target/
