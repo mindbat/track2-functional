@@ -117,10 +117,10 @@ Arguments:
   [chat-html]
   (let [msg-rows (html/select chat-html [:#messages :tr])]
     (html/let-select msg-rows
-      [name [:td.name html/text]
-       msg  [:td.message html/text]]
-      {:name (first name)
-       :message (first msg)})))
+      [names [:td.name html/text]
+       msgs  [:td.message html/text]]
+      {:name (first names)
+       :message (first msgs)})))
 
 
 (defn extract-chat-user-counts
@@ -130,9 +130,9 @@ Arguments:
                      chat-html [:#stats :tr.count])]
     (into {}
           (html/let-select count-rows
-            [name   [:td.name html/text]
+            [names  [:td.name html/text]
              counts [:td.count html/text]]
-            [(first name) (integer-value (first counts))]))))
+            [(first names) (integer-value (first counts))]))))
 
 
 (defn parse-chat-response
