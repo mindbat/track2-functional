@@ -13,22 +13,23 @@ message content of their choosing.
 Because of the anonymous nature our the chat application, it quickly
 becomes very popular.  Because the application does not attempt to limit
 the length of the conversation history, it soon runs out of available
-memory and stops accepting new messages.  This leads to the need to
-frequently restart the program, lose all messages, and field many complaints
-from the users of the system.
+memory and stops accepting new messages.  This leads frequently restarting
+the program, losing all messages, and fielding complaints from the users
+of the system.
 
 ### The Quest
 After an in-depth study of the problem, it is determined that the
 application's behavior can be fixed, and the expectations of the users
 accommodated, by:
+
 * Limiting the number of messages kept in the chat history.
 * Keeping a running total of all the messages ever posted.
 * Retaining a count of the number of messages posted by each user.
 
 In this section we will present a pattern for implementing these features,
-and a series of "solutions" that provide varying degrees "correctness".
+and a series of **solutions** that provide varying degrees **correctness**.
 
-## Dramatis Personae
+## Some Definitions
 * Mutable:  Something that can be changed (mutated).
 * Immutable:  Something that is unchangeable.
 * Imperative:  A command, sometimes a request.
@@ -38,17 +39,19 @@ evaluated to produce a result.
 ## The approach
 ### The Conversation Database
 
-1. The chat conversation will be stored in a `Map`, also known as an
-`associative array`, `dictionary`, or `hash`.
-1. This `Map` will contain four (4) entries:
+1. The chat conversation will be stored in a `Map`, a collection of
+key/value pairs, also known as an _associative array_, _dictionary_,
+or _hash_.
+1. This `Map` will contain four (4) fields:
   * `limit`:  A number indicating the maximum number of messages to retain.
   * `messages`:  A list holding the message history.
   * `counts`:  Another `Map` where each key is the name of a user and each
 value is the number of messages sent by that user.
-  * `total`:  A counter of all messages sent over the lifetime of this conversation.
+  * `total`:  A counter of all messages sent over the lifetime of this
+conversation.
 
-Or, to put it more simply, a JSON representation of the conversation database would
-look like this:
+Or, to put it more simply, a JSON representation of the conversation database
+would look like this:
 
 ```
 { "limit"    : 20,
@@ -84,8 +87,8 @@ In order to illustrate some of the differences in how mutable and immutable
 data types are used, this example will build a conversation database using
 Java's basic, mutable `HashMap` and `LinkedList` classes rather than Clojure's
 native, immutable, persistent maps, lists, and vectors.  Because this example
-uses specific Java classes, Clojure's "Java interop" support is used to
-create and interact with these Java classes.
+uses specific Java classes, Clojure's _Java interop_ support is used to
+create and interact with these native Java classes and objects.
 
 ```
 (defn new-mutable-conversation-db
@@ -237,9 +240,7 @@ This `simulate-conversation` function takes four arguments.  Two of those
 arguments, `constructor` and `add-message`, are expected to be functions.
 The simulator will use the `constructor` function to create a new conversation
 of `message-limit` messages.  The `add-message` function will be used to
-add `message-count` messages to the conversation.  This conversation
-simulating function still has some minor imperative aspects, but
-demonstrates some of the capabilities available in functional languages.
+add `message-count` messages to the conversation.
 
 The first feature we will look at is infinite lists.  Computers do not have
 infinite memory, storage, or processing capacity, so this may sound like a
@@ -250,10 +251,13 @@ function will return an infinite list that cycles through the list of provided
 values.  From this infinite list the simulator will `take` a finite number
 of values.  This is made possible by _Lazy Evaluation_.  By using a lazily
 generated list the program will likely never have a full copy of the list in
-memory at any time.  Values for the list will be generated as they are read,
-and as values are read from the head of the list only the tail, which is the
-continuation of the lazy list, will retained.  For fun you can try this out
-in your REPL, but remember to `take` a limited number of values, otherwise
+memory at any time.  The contents of the will be generated as it is read.
+As new values are read from the beginning of the list they will be discarded,
+leaving the remainder of the list, which is just the continuation of the lazy
+list, will retained.
+
+For fun you can try this out in your REPL, but remember to `take` a limited
+number of values, otherwise
 an infinite list can crash the REPL.
 
 ```
@@ -264,9 +268,17 @@ an infinite list can crash the REPL.
 
 Next on the list of amazing features is _partial evaluation_ or _currying_.
 If you look for uses of `add-message` in the `simulate-conversation` function,
-you will find it wrapped with by the `partial` function along with the `conv`
-conversation database.  The `partial` function takes a function along with
-some additional arguments and returns a new function 
+you will find it wrapped with the `partial` function.  This is a form of
+_functional composition_.  For example, if I wanted a function that doubles
+a number, I could use `partial` along with the multiplication function to
+to combine `*` with an argument of `2` thus _composing_ a doubling function.
+```
+(def double (partial * 2))
+```
+Calling `(double 5)` would become `(* 2 5)`.  In the simulator, I always
+want to call the `add-message` function on `conv`, so `partial` takes care
+of that for me, and turns `add-message` into a function of two arguments
+instead of three.
 
 The last amazing feature used by this conversation simulator is `pmap`. Like
 the `map` function, `pmap` will apply a function to each entry in a list of
@@ -340,21 +352,20 @@ see how it holds up.
  :messages #<ConcurrentLinkedDeque [ ... ]>}
 ```
 
-For brevity, the result has been truncated.  To quickly sanity check the
-results, the value of `:total` should by 500, and the sum of the per-user
-message counts should also be 500.  If the values you see don't add up,
-then try running the simulation and checking the results a couple more times
-to see what comes back.
+For brevity, the result has been truncated.  To quickly check the results,
+the value of `:total` should by 500, and the sum of the per-user message
+counts should also be 500.  If the values you see don't add up, then try
+running the simulation and checking the results a couple more times to see
+what comes back.
 
 ### What went wrong
-After studying the results from the conversation simulator using conversation
-databases constructed from either basic mutable collections or even
-concurrent, thread-safe collections, it should be apparent that making sure
-simple things are thread-safe is trickier than it might appear.  There are
-very fundamental reasons for this complexity, as the problem doesn't just
-exist in the choice of data structures, but exists all the way down to the
-most basic level of the computing machinery, and is even present everywhere
-in the physical world.
+After studying the results from simulator using conversations constructed
+from either basic mutable collections or even thread-safe collections,
+it should be apparent developing thread-safe code can be very challenging.
+There are very fundamental reasons for this complexity, as the problem
+doesn't just exist in the choice of data structures, but exists all the
+way down to the most basic level of the computing machinery, and is even
+present everywhere in the physical world.
 
 The most basic reason these coordination problems exist is because there are
 three steps that need to occur for any change to be made.  First the current
@@ -363,19 +374,19 @@ or value, will be calculated based on the observed state.  Last, the data
 will be updated with the new value or state.  If two or more tasks are
 actively observing, calculating, and updating even a single address in memory,
 changes made by one task are invalidating the observations and calculations
-made by the other tasks, but the other tasks continue on anyway oblivious to
+made by the other tasks, but the other tasks continue on anyway, oblivious to
 these changes.  This leads to lost changes, or changes that are inconsistent
 with other changes.
 
-For example, let's imagine a program that was written where two threads
+For example, let's imagine a program has been written where two threads
 attempt to increment the same number in memory.  If one thread reads the
 value, increments it, and writes it back to memory all before the other
 thread performs the same steps, then we will see that the original value
 was incremented twice.  On the other hand, if both threads read the value
 before the other has made the change, then both threads will independently
 increment the same value, and calculate the same result.  Each thread will
-then write it's result back to memory, and outcome will be that the original
-value will have only been incremented once.
+then write it's result back to memory, and outcome will be the original
+value only incremented once instead of twice.
 
 ### Black & White Demo
 
@@ -657,7 +668,7 @@ in `new-mutable-conversation-db` and `mutating-add-message`.
 
 First, the `safe-inc` function is composed with `fnil` and `inc`.  This
 provides a variation of `inc` that will replace `nil` arguments with `0`.
-So `(safe-inc nil)` returns `1` instead of throwing a NullPointerException.
+So `(safe-inc nil)` returns `1` instead of throwing a `NullPointerException`.
 
 Second, the `new-immutable-conversation-db` constructs an empty conversation
 database.  Because all of the functions that will be used to "add" a message
@@ -720,6 +731,7 @@ To work with atoms we will use two functions `deref` and `swap!`.  The
 will be used to change the contents of the atom with a function.
 
 So, let's look at an example and see how this might work.
+
 ```
 (defn new-atomic-conversation-db
   [limit]
