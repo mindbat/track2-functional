@@ -1,15 +1,15 @@
-= Track2:  The Chat Returns =
-== Goals ==
+# Track2:  The Chat Returns
+## Goals
 * To demonstrate some of Clojure's tools for managing concurrency.
 * To illustrate functional composition with the use of Ring middleware.
 
-== Our story so far... ==
+## Our story so far...
 The track1 curricula presents a guide for building a simple web-based
 chat application.  The application allows it's users to read a single,
 shared conversation and post new messages with using the name and
 message content of their choosing.
 
-=== The Conflict ===
+### The Conflict
 Because of the anonymous nature our the chat application, it quickly
 becomes very popular.  Because the application does not attempt to limit
 the length of the conversation history, it soon runs out of available
@@ -17,18 +17,18 @@ memory and stops accepting new messages.  This leads to the need to
 frequently restart the program, lose all messages, and field many complaints
 from the users of the system.
 
-=== The Quest ===
+### The Quest
 After an in-depth study of the problem, it is determined that the
 application's behavior can be fixed, and the expectations of the users
-accomodated, by:
+accommodated, by:
 * Limiting the number of messages kept in the chat history.
 * Keeping a running total of all the messages ever posted.
 * Retaining a count of the number of messages posted by each user.
 
 In this section we will present a pattern for implementing these features,
-and a series of "solutions" that provide verying degrees "correctness".
+and a series of "solutions" that provide varying degrees "correctness".
 
-== Dramatis Personae ==
+## Dramatis Personae
 * Mutable:  Something that can be changed (mutated).
 * Immutable:  Something that is unchangeable.
 * Imperative:  A command, sometimes a request.
@@ -36,8 +36,8 @@ and a series of "solutions" that provide verying degrees "correctness".
 evaluated to produce a result.
 * 
 
-== The approach ==
-=== The Conversation Database ===
+## The approach
+### The Conversation Database
 1. The chat conversation will be stored in a `Map`, also known as an
 `associative array`, `dictionary`, or `hash`.
 1. This `Map` will contain four (4) entries:
@@ -45,10 +45,11 @@ evaluated to produce a result.
   * `messages`:  A list holding the message history.
   * `counts`:  Another `Map` where each key is the name of a user and each
 value is the number of messages sent by that user.
-  * `total`:  A counter of all messages sent over the liftime of this conversation.
+  * `total`:  A counter of all messages sent over the lifetime of this conversation.
 
 Or, to put it more simply, a JSON representation of the conversation database would
 look like this:
+
 ```
 { "limit"    : 20,
   "messages" : [
@@ -66,7 +67,7 @@ look like this:
 }
 ```
 
-=== The Algorithm ===
+### The Algorithm
 When a new message is received:
 1. Create a new message record using the `name` and `message` provided by
 the user.
@@ -76,8 +77,8 @@ then remove the excess entries from the tail of the list.
 4. Increment the `total` counter for the conversation.
 5. Find the message count for the user, and increment that too.
 
-== Attempt #1: Basic Mutable Data ==
-=== Constructing the database ===
+## Attempt #1: Basic Mutable Data
+### Constructing the database
 In order to illustrate some of the differences in how mutable and immutable
 data types are used, this example will build a conversation database using
 Java's basic, mutable `HashMap` and `LinkedList` classes rather than Clojure's
@@ -123,7 +124,7 @@ case, then use it as the first argument to each of the `(.put ...)` calls,
 and return the now mutated object.  Clojure contains many such shorthand
 forms to reduce common redundancies, and ensure consistent behavior.
 
-=== Implementing the algorithm ===
+### Implementing the algorithm
 Clojure is designed for writing expression-oriented, functional logic with
 immutable values, but as we saw in the conversation constructor above, the
 language doesn't prevent you from writing imperative, mutating logic when
@@ -186,7 +187,7 @@ functions.
  :messages ({:name "Alice", :message "Friends, Romans, countryman"})}
 ```
 
-=== Testing the implementation ===
+### Testing the implementation
 Since we expect multiple people to use this application simultaneously,
 having a test case that can simulate this type of parallel activity would
 let us verify the correctness of our code.
@@ -278,7 +279,7 @@ The shock, the horror, the failure.  The simple explanation for failures like
 this is that Java's simple data structures, like LinkedList and HashMap,
 aren't "thread safe", they can't be modified by two threads at the same time.
 
-=== Re-implementing the algorithm ===
+### Re-implementing the algorithm
 Java, and many other languages, provide concurrent, thread-safe versions
 of common collections types.  So let's whip up an alternate implmentation of
 `new-mutable-conversation-db`.  This version will be called
@@ -332,7 +333,7 @@ message counts should also be 500.  If the values you see don't add up,
 then try running the simulation and checking the results a couple more times
 to see what comes back.
 
-=== What went wrong ===
+### What went wrong
 After studying the results from the conversation simulator using conversation
 databases constructed from either basic mutable collections or even
 concurrent, thread-safe collections, it should be apparent that making sure
@@ -363,17 +364,17 @@ increment the same value, and calculate the same result.  Each thread will
 then write it's result back to memory, and outcome will be that the original
 value will have only been incremented once.
 
-=== Black & White Demo ===
+### Black & White Demo
 
-== Coordination with locking ==
-=== The theory ===
+## Coordination with locking
+### The theory
 One way of coordinating changes across threads is through _locking_.  With
 locking we can create a barrier that will only allow one thread access to
 a variable at a time.  The first thread to acquire the lock will continue
 with it's work.  Any other threads that attempt to acquire the lock while
 it's being held will pause until the lock has been released.
 
-=== The implmenetation ===
+### The implmenetation
 Since locking is something that is performed to coordinate changes to a
 variable, we will write a new function for adding messages to the
 conversation database.  
@@ -393,7 +394,7 @@ function takes the same three arguments, `conversation`, `name`, and
 can see how `locking` the `conversation` literally wraps the call to
 `mutating-add-message`.  
 
-=== Testing the implementation ===
+### Testing the implementation
 Let's try running the simulator with the new `locking-add-message` function.
 
 ```
@@ -566,7 +567,7 @@ to be.  Another instance of _functional composition_ is the `partial`
 function used in `simulate-conversation` to construct a new function with
 fewer arguments.
 
-=== The analysis ===
+### The analysis
 Writing programs that can accurately and consistently manage changes to
 mutable data structures acros multiple active threads is very difficult.
 Often the shortcomings in the code won't be caught through basic correctness
@@ -586,8 +587,8 @@ has become serialized, single-threaded, and the ability to serve many
 users at once has been substantially diminished.
 
 
-== The immutable approach ==
-=== What is immutable data? ===
+## The immutable approach
+### What is immutable data?
 Fortunately, Clojure provides a simpler lternative to the lock-and-mutate
 approach.  Clojure's standard collections types are very different from the
 collections typically found in imperative languages.  Most importantly,
@@ -677,7 +678,7 @@ used to trim the `messages` list down to `limit` entries.
 Compared to the `mutating-add-message` function, this function is much more
 succinct, and hopefully, the intentended result is more evident.
 
-=== How can we change it? ===
+### How can we change it?
 Immutable values that can be shared, retained, and reused are great, but
 this chat application really does need to add and update it's data, and
 preserve the changes.
@@ -744,7 +745,7 @@ safe, let's run this atomic conversation through the conversation simulator
 These results look good, the `:total` matches the number of messages we
 asked it to add, and the sum of the per-user `:counts` adds up to the total.
 
-=== Is it better? ===
+### Is it better?
 Correctness and consistency are always essential qualities for any
 computational tool we use, but you may be wondering what the performance
 characteristics are.  If two threads are trying to update the same atom,
@@ -806,5 +807,5 @@ usually less than the cost of maintaining locks.  Additionally, the
 amount of development time needed to ensure the correct implementation
 of a concurrent algorithm is dramatically when using atoms.
 
-== In conclusion ==
+## In conclusion
 ...
