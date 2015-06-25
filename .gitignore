@@ -10,9 +10,13 @@
 /classes
 /target
 /checkouts
+/bin
 /.lein*
 
 # Editor artifacts
+.classpath
+.project
+.nrepl-port
 .nrepl*
 *~
 
