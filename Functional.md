@@ -126,6 +126,8 @@ java.lang.Boolean
 
 ## Keywords
 
+Periodically you'll see something that looks like the following: `:red` ':someKey` these are keywords.
+
 From the Clojure docs:
 `Keywords are symbolic identifiers that evaluate to themselves.
 They provide very fast equality tests.`
@@ -138,6 +140,15 @@ with a couple exceptions.
 keyword.
 * Keywords get special treatment in Clojure: they act like a function when looking up a value
 in a hash-map - we'll introduce hash-maps later.
+
+```clojure
+user=> :red
+:red
+user=> (= :red :blue)
+false
+user=> (= :red :red)
+true
+```
 
 ## Exercises
 
