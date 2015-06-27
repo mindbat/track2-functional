@@ -27,7 +27,8 @@ accommodated, by:
 * Retaining a count of the number of messages posted by each user.
 
 In this section we will present a pattern for implementing these features,
-and a series of **solutions** that provide varying degrees **correctness**.
+followed by a series of **solutions** that provide varying degrees
+**correctness**.
 
 ## Some Definitions
 * Mutable:  Something that can be changed (mutated).
@@ -213,12 +214,12 @@ nil
 
 => (in-ns 'chatter.handler-test)
 
-#<Namespace chatter.handler-test>
+ #<Namespace chatter.handler-test>
 ```
 
-In the `chatter.handler-test` namespace you can find a `simulate-conversation`
-function that provides an example of we can write a test that exercises
-our code in parallel.
+In the `chatter.handler-test` namespace you can find a
+`simulate-conversation` function that provides an example of we can write
+a test that exercises our code in parallel.
 
 ```
 (defn simulate-conversation
@@ -238,57 +239,59 @@ our code in parallel.
 
 This `simulate-conversation` function takes four arguments.  Two of those
 arguments, `constructor` and `add-message`, are expected to be functions.
-The simulator will use the `constructor` function to create a new conversation
-of `message-limit` messages.  The `add-message` function will be used to
-add `message-count` messages to the conversation.
+The simulator will use the `constructor` function to create a new
+conversation of `message-limit` messages.  The `add-message` function will
+be used to add `message-count` messages to the conversation.
 
-The first feature we will look at is infinite lists.  Computers do not have
-infinite memory, storage, or processing capacity, so this may sound like a
-strange capability.  The simulator creates two small lists, `names` and
-`messages` that it will use for the `name` and `message` arguments when
-calling the `add-message` function.  Passing these small lists to the `cycle`
-function will return an infinite list that cycles through the list of provided
-values.  From this infinite list the simulator will `take` a finite number
-of values.  This is made possible by _Lazy Evaluation_.  By using a lazily
-generated list the program will likely never have a full copy of the list in
-memory at any time.  The contents of the list will be generated as it is read.
-As new values are read from the beginning of the list they will be discarded,
-leaving the remainder of the list, which is just the continuation of the lazy
-list, will retained.
+> **A few amazing features**
+>
+> **Infinite Lists:**
+> Computers do not have infinite memory, storage, or processing capacity, so
+> something like infinite lists may sound like a strange capability.  The
+> simulator creates two small lists, `names` and `messages` that it will use
+> for the `name` and `message` arguments when calling the `add-message`
+> function.  Passing these small lists to the `cycle` function will return an
+> infinite list that cycles through the list of provided values.  From this
+> infinite list the simulator will `take` a finite number of values.  This is
+> made possible by _Lazy Evaluation_.  By using a lazily generated list the
+> program will likely never have a full copy of the list in memory at any
+> time.  The contents of the list will be generated as it is read. As new
+> values are read from the beginning of the list they will be discarded,
+> leaving the remainder of the list, which is just the continuation of the
+> lazy list, will retained.
+>
+> For fun you can try this out in your REPL, but remember to `take` a limited
+> number of values, otherwise
+> an infinite list can crash the REPL.
+>
+> ```
+> => (take 10 (cycle ["Alice" "Bob" "Cindy" "Doug"]))
+>
+> ("Alice" "Bob" "Cindy" "Doug" "Alice" "Bob" "Cindy" "Doug" "Alice" "Bob")
+> ```
+>
+> **Currying:**
+> If you look for uses of `add-message` in the `simulate-conversation` function,
+> you will find it wrapped with the `partial` function.  This is a form of
+> _functional composition_.  For example, if I wanted a function that doubles
+> a number, I could use `partial` along with the multiplication function to
+> to combine `*` with an argument of `2` thus _composing_ a doubling function.
+> ```
+> (def double (partial * 2))
+> ```
+> Calling `(double 5)` would become `(* 2 5)`.  In the simulator, I always
+> want to call the `add-message` function on `conv`, so `partial` takes care
+> of that for me, and turns `add-message` into a function of two arguments
+> instead of three.
+>
+> **Easy Parallelism:**
+> Like the `map` function, `pmap` will apply a function to each entry in a
+> list of values, and return a new list composed of the results.
+> Additionally, `pmap` will apply these functions in parallel using a pool
+> of threads.  For long-running tasks, this can reduce the total time needed
+> to process the entire collection.
 
-For fun you can try this out in your REPL, but remember to `take` a limited
-number of values, otherwise
-an infinite list can crash the REPL.
-
-```
-=> (take 10 (cycle ["Alice" "Bob" "Cindy" "Doug"]))
-
-("Alice" "Bob" "Cindy" "Doug" "Alice" "Bob" "Cindy" "Doug" "Alice" "Bob")
-```
-
-Next on the list of amazing features is _partial evaluation_ or _currying_.
-If you look for uses of `add-message` in the `simulate-conversation` function,
-you will find it wrapped with the `partial` function.  This is a form of
-_functional composition_.  For example, if I wanted a function that doubles
-a number, I could use `partial` along with the multiplication function to
-to combine `*` with an argument of `2` thus _composing_ a doubling function.
-```
-(def double (partial * 2))
-```
-Calling `(double 5)` would become `(* 2 5)`.  In the simulator, I always
-want to call the `add-message` function on `conv`, so `partial` takes care
-of that for me, and turns `add-message` into a function of two arguments
-instead of three.
-
-The last amazing feature used by this conversation simulator is `pmap`. Like
-the `map` function, `pmap` will apply a function to each entry in a list of
-values, and return a new list composed of the results.  Additionally, `pmap`
-will apply these functions in parallel using a pool of threads.  For
-long-running tasks, this can reduce the total time needed to process the
-entire collection.
-
-
-So finally, let's run the conversation simulator and see what we get.
+Let's run the conversation simulator and see what we get.
 
 ```
 => (simulate-conversation
@@ -388,7 +391,10 @@ increment the same value, and calculate the same result.  Each thread will
 then write it's result back to memory, and outcome will be the original
 value only incremented once instead of twice.
 
-### Black & White Demo
+### Visualizing Mutable Data
+<img src="https://i.vimeocdn.com/video/511735825_1280x939.jpg"
+      alt="Mutating Data" width="426" height="313"/>
+[Mutating State](https://player.vimeo.com/video/122669829?byline=0&portrait=0)
 
 ## Attempt #2: Coordination with Locking
 ### The theory
@@ -764,9 +770,9 @@ safe, let's run this atomic conversation through the conversation simulator
 ```
 => (simulate-conversation new-atomic-conversation-db 20 atomic-add-message 500)
 
-#<Atom@452bceb5: {:limit 20, :total 500,
-                  :counts {"Bob" 125, "Doug" 125, "Alice" 125, "Cindy" 125},
-                  :messages ( ... )}>
+ #<Atom@452bceb5: {:limit 20, :total 500,
+                   :counts {"Bob" 125, "Doug" 125, "Alice" 125, "Cindy" 125},
+                   :messages ( ... )}>
 ```
 
 These results look good, the `:total` matches the number of messages we
