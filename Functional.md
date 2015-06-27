@@ -126,7 +126,7 @@ java.lang.Boolean
 
 ## Keywords
 
-Periodically you'll see something that looks like the following: `:red` ':someKey` these are keywords.
+Periodically you'll see things in Clojure programs that have a colon in front of it: `:red` `:some-key`. These are keywords.
 
 From the Clojure docs:
 `Keywords are symbolic identifiers that evaluate to themselves.
