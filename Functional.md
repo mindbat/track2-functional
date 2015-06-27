@@ -370,8 +370,8 @@ user=> (assoc (hash-map :blue 30 :red 100) :blue 20)
 Finally we have a shorthand to build maps, we don't need to use the hash-map function.
 
 ```clojure
-user=> {"red" 100, "blue" 30}
-{"blue" 30, "red" 100}
+user=> {:red 100, :blue 30}
+{:red 100, :blue 30}
 ```
 
 ### Exercises
