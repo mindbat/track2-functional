@@ -16,10 +16,13 @@
     (let [response (app (mock/request :get "/invalid"))]
       (is (= (:status response) 404)))))
 
+
+
 (deftest test-safe-inc
   (is (= 1 (safe-inc nil)))
   (is (= 1 (safe-inc 0)))
   (is (= 2 (safe-inc 1))))
+
 
 
 (defn simulate-conversation
@@ -44,7 +47,9 @@ Arguments:
     conv))
 
 
+
 (deftest parallel-add-messages
+  "Run Conversation Simulations and verify the results."
   (let [messages 50000
         message-limit 20]
     (are [constructor add-message extract]
@@ -75,9 +80,9 @@ Arguments:
                        'constructor 'add-message)))
 
          ;;  This will likely throw exceptions and not work at all
-         ;new-mutable-conversation-db
-         ;mutating-add-message
-         ;identity
+         new-mutable-conversation-db
+         mutating-add-message
+         identity
 
          ;;  This won't throw exceptions, but usually fails with
          ;;  random, wrong results
@@ -86,9 +91,9 @@ Arguments:
          ;identity
 
          ;;  This should work
-         new-mutable-conversation-db
-         locking-add-message
-         identity
+         ;new-mutable-conversation-db
+         ;locking-add-message
+         ;identity
 
          ;;  This should work too
          ;new-mutable-concurrent-conversation-db
@@ -102,6 +107,7 @@ Arguments:
          )))
 
 
+
 (defn integer-value
   "Convert a string or other value into an integer"
   [x]
@@ -110,6 +116,7 @@ Arguments:
                       (catch Exception e 0))
         (nil? x)    0
         :else       (recur (str x))))
+
 
 
 (defn extract-chat-messages
@@ -123,6 +130,7 @@ Arguments:
        :message (first msgs)})))
 
 
+
 (defn extract-chat-user-counts
   "Extract the per-user message counts from the HTML of a chat page"
   [chat-html]
@@ -133,6 +141,7 @@ Arguments:
             [names  [:td.name html/text]
              counts [:td.count html/text]]
             [(first names) (integer-value (first counts))]))))
+
 
 
 (defn parse-chat-response
@@ -150,6 +159,7 @@ conversation data"
      :total       total}))
 
 
+
 (defn post-message
   "Post a new message to a chat server.
 Returns the HTML response converted back into conversation data."
@@ -159,12 +169,14 @@ Returns the HTML response converted back into conversation data."
                     :as :stream})))
 
 
+
 (defn read-messages
   "Read the current messages on a chat server.
 Returns the HTML response converted back into conversation data."
   [url]
   (parse-chat-response
     (http/get url {:as :stream})))
+
 
 
 (defn post-message-and-check
@@ -182,6 +194,7 @@ Returns the HTML response converted back into conversation data."
     ))
 
 
+
 (defn chat-bot [url message-count names messages]
   (doall
     (pmap (partial post-message-and-check url)
@@ -189,7 +202,7 @@ Returns the HTML response converted back into conversation data."
           (take message-count (cycle messages))))
   (read-messages url))
 
-#_(chat-bot "http://localhost:8000/"
+#_(chat-bot "http://localhost:3000/"
            50
            ["Thing One" "Thing Two"]
            ["They can"
