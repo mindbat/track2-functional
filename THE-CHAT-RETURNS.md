@@ -13,9 +13,9 @@ message content of their choosing.
 Because of the anonymous nature our the chat application, it quickly
 becomes very popular.  Because the application does not attempt to limit
 the length of the conversation history, it soon runs out of available
-memory and stops accepting new messages.  This leads frequently restarting
-the program, losing all messages, and fielding complaints from the users
-of the system.
+memory and stops accepting new messages.  This necessitates frequently
+restarting the program, losing all messages, and fielding complaints from
+the users of the system.
 
 ### The Quest
 After an in-depth study of the problem, it is determined that the
@@ -148,13 +148,13 @@ the code has an imperative flow to it.
         counts   (.get conversation :counts)
         messages (.get conversation :messages)]
 
-    (doto counts
-      (.put name (inc (.getOrDefault counts name 0))))
+    (.put counts
+      name (inc (.getOrDefault counts name 0)))
 
-    (doto messages
-      (.addFirst (doto (new HashMap)
-                   (.put :name name)
-                   (.put :message new-message))))
+    (.addFirst messages
+      (doto (new HashMap)
+            (.put :name name)
+            (.put :message new-message)))
 
     (loop []
       (when (< limit (.size messages))
