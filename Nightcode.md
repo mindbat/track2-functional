@@ -45,6 +45,6 @@ To run the Koans, do the following
  ```
  
  You will now see that this assertion passed successfully and you a failure on the next assertion.
- 5. Modify the code in the next assertion to make it pass and continue on to all the assertion int he file by clicking `Eval` every time you modify the code.# Getting started with Nightcode
-Nightcode is a clojure IDE that comes bundled with other tools in the
-clojure development stack. 
+ 5. Modify the code in the next assertion to make it pass and continue on to all the assertion inthe file by clicking `Eval` every time you modify the code.
+ 
+
