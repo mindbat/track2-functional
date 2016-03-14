@@ -12,6 +12,21 @@ Open Nightcode by double-clicking the downloaded jar or selecting the downloaded
 
 Once Nightcode is loaded, verify that you have the complete clojure stack by typing command in the Clojure REPL.
 # Clojure REPL
+The clojure Read-Eval-Print-Loop or REPL console is at the bottom left corner of Nightcode. To evaluate an expression in the REPL, type in the expression and press enter as shown below
+
+```
+clojure.core=>(reduce + [1 2 3 4 5])
+```
+
+When you press enter at the end of the line you should see the following:
+
+```
+clojure.core=> (reduce + [1 2 3 4 5])
+15
+clojure.core=>
+```
+
+This confirms you have successfully installed Nightcode. **Congratulations!**
 
 # New project cloned from git
   Follow the steps below to clone a new project from a git repository. For this example we will clone the git repository at https://github.com/clojurebridge-minneapolis/clojure-koans.git
