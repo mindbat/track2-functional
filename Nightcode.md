@@ -8,7 +8,22 @@ Download and install Java 7 or Java 8
 
 Download Nightcode from https://sekao.net/nightcode/ into a tools folder like `~/tools/nightcode`
 
-Open Nightcode by double-clicking the downloaded jar or selecting the downloaded jar, right-click and select the "Open" command. 
+Open a command shell and type `java -jar <path to nightcode download>`. For example, if you have downloaded Nightcode to `~/tools/nightcode` type the following in a command shell.
+
+```
+java -jar ~/tools/nightcode/nightcode-1.0.1-standalone.jar
+```
+
+To open a command shell,
+
+** On Windows:**
+
+(Windows Key + R) and then type `cmd` and enter
+
+** On Mac:**
+
+(Command Key + Space) and then type `terminal` and enter
+
 
 Once Nightcode is loaded, verify that you have the complete clojure stack by typing command in the Clojure REPL.
 # Clojure REPL
