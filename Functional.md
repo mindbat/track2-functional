@@ -13,10 +13,18 @@ designed to teach Clojure.
 Each one will be an assertion such as the following:
 
 ```clojure
-(= true __)
+(= __ true)
 ```
 
-The purpose of these exercises is to alter the `__` to make the assertion pass.
+`__` is a placeholder for code that you need to complete. When you first run
+the exercises, the assertion will fail with a message like the one below
+
+```
+ExceptionInfo We shall contemplate truth by testing reality, via equality
+(= __ true)  clojure.core/ex-info (core.clj:4617)
+```
+
+You need to alter the `__` to make the assertion pass.
 
 ```clojure
 (= true true)
@@ -25,14 +33,7 @@ The purpose of these exercises is to alter the `__` to make the assertion pass.
 The koans are done incrementally, as you complete each one it will then move on to the next koan.
 Feel free to go through these at your own pace.
 
-To get the koans all setup and running:
-
-	git clone git@github.com:clojurebridge-minneapolis/clojure-koans.git
-	cd clojure-koans
-	lein koan run
-
-It should give you a failed message, as you fix each broken assertion and save it should walk to
-the next problem.
+To get started with Koans see [Clojure Koans](https://github.com/clojurebridge-boston/track2-functional/blob/esumitra-boston/Nightcode.md#clojure-koans)
 
 # Syntax
 
