@@ -8,10 +8,40 @@ Download and install Java 7 or Java 8
 
 Download Nightcode from https://sekao.net/nightcode/ into a tools folder like `~/tools/nightcode`
 
-Open Nightcode by double-clicking the downloaded jar or selecting the downloaded jar, right-click and select the "Open" command. 
+Open a command shell and type `java -jar <path to nightcode download>`. For example, if you have downloaded Nightcode to `~/tools/nightcode` type the following in a command shell.
+
+```
+java -jar ~/tools/nightcode/nightcode-1.0.1-standalone.jar
+```
+
+To open a command shell,
+
+**On Windows:**
+
+(Windows Key + R) and then type `cmd` and enter
+
+**On Mac:**
+
+(Command Key + Space) and then type `terminal` and enter
+
 
 Once Nightcode is loaded, verify that you have the complete clojure stack by typing command in the Clojure REPL.
 # Clojure REPL
+The clojure Read-Eval-Print-Loop or REPL console is at the bottom left corner of Nightcode. To evaluate an expression in the REPL, type in the expression and press enter as shown below
+
+```
+clojure.core=>(reduce + [1 2 3 4 5])
+```
+
+When you press enter at the end of the line you should see the following:
+
+```
+clojure.core=> (reduce + [1 2 3 4 5])
+15
+clojure.core=>
+```
+
+This confirms you have successfully installed Nightcode. **Congratulations!**
 
 # New project cloned from git
   Follow the steps below to clone a new project from a git repository. For this example we will clone the git repository at https://github.com/clojurebridge-minneapolis/clojure-koans.git
@@ -45,6 +75,6 @@ To run the Koans, do the following
  ```
  
  You will now see that this assertion passed successfully and you a failure on the next assertion.
- 5. Modify the code in the next assertion to make it pass and continue on to all the assertion inthe file by clicking `Eval` every time you modify the code.
+ 5. Modify the code in the next assertion to make it pass and continue on to all the assertion inthe file by saving and clicking `Eval` every time you modify the code. The keyboard shortcut `(Command + E)` to eval can be used to quickly evaluate your answers. Don't forget to save the file after you complete the koans in this file.
  
 
