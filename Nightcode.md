@@ -16,11 +16,11 @@ java -jar ~/tools/nightcode/nightcode-1.0.1-standalone.jar
 
 To open a command shell,
 
-** On Windows:**
+**On Windows:**
 
 (Windows Key + R) and then type `cmd` and enter
 
-** On Mac:**
+**On Mac:**
 
 (Command Key + Space) and then type `terminal` and enter
 
