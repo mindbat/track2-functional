@@ -197,6 +197,13 @@ user=> (nth (list 1 2 3) 0)
 1
 ```
 
+Use the `count` function to get the size of a list:
+
+```clojure
+user=> (count '(0 1 2 3))
+4
+```
+
 Finally Clojure has a shorthand for defining lists; instead of calling the list function we can
 use the following:
 
@@ -409,6 +416,22 @@ user=> (if (neg? y) (- y) y)
 7
 ```
 
+The `cond` form can also be used to test multiple conditions like if-then-elseif-... This form takes test and expression pairs. The expression is evaluated and returned if the test evaluates to true. Tests are evaluated in the order they are defined. In the function below, the first test is for positive numbers, the second for negative numbers and if no tests match, the `:else` expression is evaluated and returned
+
+```clojure
+user=>(def x -5)
+5
+user=>
+(cond
+  (> x 0) "positive"
+  (< x 0) "negative"
+  :else "zero")
+"negative"
+```
+
+### Exercises
+
+Try to complete the  Koans `07_conditionals.clj`.
 
 # Defining your own functions
 
@@ -464,6 +487,21 @@ user=> (condition-holds? odd? [3 4])
 false
 user=> (condition-holds? is-palindrome? ["eye" "bob"])
 true
+```
+
+Functions can also return functions as their result. In the code example below the `ntimes` function returns a function that multiplies its argument by n. The functions `double` and `triple` are functions returned by the ntimes function for the arguments 2 and 3 respectively.
+
+```clojure
+user=>(defn ntimes [n] (fn [x] (* n x)))
+#'user/ntimes
+user=>(def double (ntimes 2))
+#'user/double
+user=>(def triple (ntimes 3))
+#'user/triple
+user=>(triple 4)
+12
+user=>(double 3)
+6
 ```
 
 ### Anonymous functions

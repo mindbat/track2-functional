@@ -75,6 +75,6 @@ To run the Koans, do the following
  ```
  
  You will now see that this assertion passed successfully and you a failure on the next assertion.
- 5. Modify the code in the next assertion to make it pass and continue on to all the assertion inthe file by clicking `Eval` every time you modify the code.
+ 5. Modify the code in the next assertion to make it pass and continue on to all the assertion inthe file by saving and clicking `Eval` every time you modify the code. The keyboard shortcut `(Command + E)` to eval can be used to quickly evaluate your answers. Don't forget to save the file after you complete the koans in this file.
  
 
