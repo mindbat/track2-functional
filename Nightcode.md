@@ -58,16 +58,17 @@ Create a new Nightcode project cloned from the Clojure Koans git project at http
 
 To run the Koans, do the following
 
- 1. Click `Run with REPL`
- 2. In the Nightcode project files panel on the left, select the file *src/koans/01_equalities.clj*. This will open the file in the editing panel.
- 3. Click `Eval`. You will see an assertion failure like the one below
+ 1. In the Nightcode project files panel on the left, select the file *src/koans/01_equalities.clj*. This will open the file in the editing panel.
+ 2. Click `Run with REPL`
+ 3. Click `Reload`
+ 4. Click `Eval`. You will see an assertion failure like the one below
 
  ```
  ExceptionInfo We shall contemplate truth by testing reality, via equality
  (= __ true)  clojure.core/ex-info (core.clj:4327)
  ```
  
- 4. Modify the code in the file as below, save and click `Eval` again
+ 4. Modify the code in the file as below and click `Eval` again
  
  ```
  "We shall contemplate truth by testing reality, via equality"
@@ -75,6 +76,7 @@ To run the Koans, do the following
  ```
  
  You will now see that this assertion passed successfully and you a failure on the next assertion.
- 5. Modify the code in the next assertion to make it pass and continue on to all the assertion inthe file by saving and clicking `Eval` every time you modify the code. The keyboard shortcut `(Command + E)` to eval can be used to quickly evaluate your answers. Don't forget to save the file after you complete the koans in this file.
+ 
+ 5. Modify the code in the next assertion to make it pass and continue on to all the assertions in the file by clicking `Eval` every time you modify the code. The keyboard shortcut `(Command + E)` to eval can be used to quickly evaluate your answers as you modify the code. Don't forget to save the file after you complete the koans in this file.
  
 
