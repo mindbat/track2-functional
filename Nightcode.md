@@ -6,7 +6,9 @@ clojure development stack.
 # Install Nightcode
 Download and install Java 7 or Java 8
 
-Download Nightcode from https://sekao.net/nightcode/ into a tools folder like `~/tools/nightcode`
+Download Nightcode 1.0.1 from the link below into a tools folder like `~/tools/nightcode`
+
+[Nightcode 1.0.1](https://github.com/oakes/Nightcode/releases/download/1.0.1/nightcode-1.0.1-standalone.jar)
 
 Open a command shell and type `java -jar <path to nightcode download>`. For example, if you have downloaded Nightcode to `~/tools/nightcode` type the following in a command shell.
 
