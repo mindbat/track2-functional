@@ -66,7 +66,7 @@ commas are simply treated as whitespace so we don't need them.
 ### Math
 
 Unlike common languages, such as JavaScript, in which `+` is an operation that is used in arithmetic expressions, and square root `sqrt` is a function, in Clojure every action is a function, there is no notion of operators. Additionally all of the
-math operators take a variable number of arguments.
+math functions take a variable number of arguments.
 
 ```clojure
 user=> (+ 1 1)
