@@ -1,11 +1,12 @@
 (ns chatter.handler-test
-  (:require [clojure.test :as test :refer [deftest are is testing run-tests]]
+  (:require [clojure.test :as test :refer [deftest
+                                           are is
+                                           testing run-tests]]
             [ring.mock.request :as mock]
             [chatter.handler :refer :all]
             [clj-http.client :as http]
             [net.cgrand.enlive-html :as html]
             [net.cgrand.jsoup :as jsoup]))
-
 
 (deftest test-app
   (testing "main route"
@@ -16,23 +17,19 @@
     (let [response (app (mock/request :get "/invalid"))]
       (is (= (:status response) 404)))))
 
-
-
 (deftest test-safe-inc
   (is (= 1 (safe-inc nil)))
   (is (= 1 (safe-inc 0)))
   (is (= 2 (safe-inc 1))))
 
-
-
 (defn simulate-conversation
   "This function will simulate a number of participants
-simultaneously partipating in a chat.
-Arguments:
-  constructor:   A function that will create a new conversation
-  message-limit: The maximum number of messages to keep as history
-  add-message:   A function for adding a message to the conversation
-  message-count: The total number of messages to add to the conversation"
+   simultaneously partipating in a chat.
+   Arguments:
+    constructor: Create a new conversation
+    message-limit: Max number of messages to keep as history
+    add-message: Add a message to the conversation
+    message-count: How many messages to add to the conversation"
   [constructor message-limit add-message message-count]
   (let [conv     (constructor message-limit)
         names    ["Alice" "Bob" "Cindy" "Doug"]
@@ -45,8 +42,6 @@ Arguments:
             (take message-count (cycle messages))
             ))
     conv))
-
-
 
 (deftest parallel-add-messages
   "Run Conversation Simulations and verify the results."
@@ -62,28 +57,27 @@ Arguments:
                conversation (extract result)]
            (printf "\nSimulation completed in %dms: %s %s\n"
                    (- finish start) 'constructor 'add-message)
-
            (is (= messages (:total conversation))
-               (format "Total Message Count must match iteration count: %s %s"
-                       'constructor 'add-message))
-
+               (format
+                "Message Count must match iteration count: %s %s"
+                'constructor 'add-message))
            (is (= messages (reduce + (vals (:counts conversation))))
-               (format "Sum of user message counts must match iteration count: %s %s"
-                       'constructor 'add-message))
-
+               (format
+                "Sum of user message counts must match iteration count: %s %s"
+                'constructor 'add-message))
            (is (= message-limit (:limit conversation) )
-               (format "Conversation's limit must match expected message limit: %s %s"
-                       'constructor 'add-message))
+               (format
+                "Conversation's limit must match expected message limit: %s %s"
+                'constructor 'add-message))
 
            (is (= message-limit (count (:messages conversation)))
-               (format "Number of messages must equal the message limit: %s %s"
-                       'constructor 'add-message)))
-
+               (format
+                "Number of messages must equal the message limit: %s %s"
+                'constructor 'add-message)))
          ;;  This will likely throw exceptions and not work at all
          new-mutable-conversation-db
          mutating-add-message
          identity
-
          ;;  This won't throw exceptions, but usually fails with
          ;;  random, wrong results
          ;new-mutable-concurrent-conversation-db
@@ -106,18 +100,16 @@ Arguments:
          ;deref
          )))
 
-
-
 (defn integer-value
   "Convert a string or other value into an integer"
   [x]
-  (cond (number? x) (.longValue x)
-        (string? x) (try (Long/parseLong x)
-                      (catch Exception e 0))
-        (nil? x)    0
-        :else       (recur (str x))))
-
-
+  (cond
+   (number? x) (.longValue x)
+   (string? x) (try (Long/parseLong x)
+                    (catch Exception e 0))
+   (nil? x)    0
+   :else
+   (recur (str x))))
 
 (defn extract-chat-messages
   "Extract the message history from the HTML of a chat page"
@@ -129,24 +121,20 @@ Arguments:
       {:name (first names)
        :message (first msgs)})))
 
-
-
 (defn extract-chat-user-counts
   "Extract the per-user message counts from the HTML of a chat page"
   [chat-html]
   (let [count-rows (html/select
-                     chat-html [:#stats :tr.count])]
+                    chat-html [:#stats :tr.count])]
     (into {}
           (html/let-select count-rows
-            [names  [:td.name html/text]
-             counts [:td.count html/text]]
+                           [names  [:td.name html/text]
+                            counts [:td.count html/text]]
             [(first names) (integer-value (first counts))]))))
-
-
 
 (defn parse-chat-response
   "Take the response from a chat server and turn it back into
-conversation data"
+   conversation data"
   [response]
   (let [chat-html (jsoup/parser (:body response))
         messages  (extract-chat-messages chat-html)
@@ -154,30 +142,24 @@ conversation data"
         total     (integer-value
                     (first
                       (html/select chat-html [:#total html/text])))]
-    {:messages    messages
-     :counts      counts
-     :total       total}))
-
-
+    {:messages messages
+     :counts counts
+     :total total}))
 
 (defn post-message
   "Post a new message to a chat server.
-Returns the HTML response converted back into conversation data."
+   Returns the HTML response converted back into conversation data."
   [url name message]
   (parse-chat-response
     (http/post url {:form-params {:name name :msg message}
                     :as :stream})))
 
-
-
 (defn read-messages
   "Read the current messages on a chat server.
-Returns the HTML response converted back into conversation data."
+   Returns the HTML response converted back into conversation data."
   [url]
   (parse-chat-response
     (http/get url {:as :stream})))
-
-
 
 (defn post-message-and-check
   "Post a message to a chat server, and sanity check the response"
@@ -187,13 +169,9 @@ Returns the HTML response converted back into conversation data."
     (and (is (some (partial = expected-message)
                    (:messages conv))
              "Must see my own new message")
-
          (is (= (:total conv)
                 (reduce + (vals (:counts conv))))
-             "Total must equal the sum of the user counts"))
-    ))
-
-
+             "Total must equal the sum of the user counts"))))
 
 (defn chat-bot [url message-count names messages]
   (doall
