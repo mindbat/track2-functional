@@ -11,5 +11,4 @@
                    [enlive "1.1.6"]]
   :plugins [[lein-ring "0.9.6" :exclusions [org.clojure/clojure]]]
   :ring {:handler chatter.handler/app}
-  :profiles {:dev {:dependencies [[ring/ring-mock "0.2.0"]]}}
-  )
+  :profiles {:dev {:dependencies [[ring/ring-mock "0.2.0"]]}})
